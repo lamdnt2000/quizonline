@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sign In</title>
+        <link href="./resource/home/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/all.css">
+    </head>
+
+    <!------ Include the above in your HEAD tag ---------->
+
+
+
+
+    <br><br><br>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" onclick='window.location.href = "/quizonline";'>Quiz Online</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="login">Sign In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="Signup">Sign Up</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+
+        <div class="row justify-content-md-center">
+
+            <aside class="col-sm-5 ">
+
+
+                <div class="card">
+                    <article class="card-body">
+                        <a href="Signup" class="float-right btn btn-outline-primary">Sign up</a>
+                        <h4 class="card-title mb-5 mt-2 float-left">Sign in</h4>
+
+
+                        <form action="LoginProcess" method="POST" id="loginForm">
+                            <div class="form-group">
+                                <input name="txtEmail" class="form-control" placeholder="Email" type="text">
+                            </div> <!-- form-group// -->
+                            <div class="form-group">
+                                <input name="txtPassword" class="form-control" placeholder="******" type="password">
+                            </div> <!-- form-group// -->   
+
+                            <hr>
+                            <div id="message"></div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                                    </div> <!-- form-group// -->
+                                </div>
+                            </div> <!-- .row// -->                                                                  
+                        </form>
+                    </article>
+                </div> <!-- card.// -->
+
+            </aside> <!-- col.// -->
+
+        </div> <!-- row.// -->
+
+    </div> 
+    <!--container end.//-->
+
+    <br><br><br>
+
+    <script src="./resource/home/vendor/jquery/jquery.min.js"></script>
+    <script src="./resource/home/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="./resource/js/jquery-1.12.0.min.js" crossorigin="anonymous"></script>
+    <script src="./resource/js/jquery.validate.min.js"></script>
+    <script src="./resource/js/additional-methods.min.js"></script>
+    <script type="text/javascript">
+                $().ready((function () {
+                    $('#loginForm').validate({
+                        rule: {
+
+                        },
+                        submitHandler: function (form) {
+                            $.ajax({
+                                type: form.method,
+                                url: form.action,
+                                data: $(form).serialize(),
+                                success: function (data) {
+                                    var status = data.status;
+                                    var msg = data.message;
+                                    if (status <= 0) {
+                                        $('#message').addClass('p-3 mb-2 bg-danger text-white');
+                                        $('#message').html(msg);
+                                    } else {
+                                        window.location.href = msg;
+                                    }
+
+                                }
+                            });
+                        },
+
+                    })
+                })
+                        )
+
+    </script>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Sign Up</title>
+        <link href="./resource/home/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="./resource/home/css/shop-homepage.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+                <a class="navbar-brand" onclick='window.location.href = "./";'>Quiz Online</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="login">Sign In</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="Signup">Sign Up</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+
+            <br>
+
+            <div class="row h-100 justify-content-center align-items-center">
+
+                <form action="SignUpProcess" method="POST" id="signupForm" class="col-10 col-md-8 col-lg-6">
+                    <div class="form-group">
+                        <input type="email" name="txtEmail"  class="form-control my-input"   placeholder="Email" >
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="txtFullName"  class="form-control my-input" placeholder="Full name">
+                    </div>
+                    <div class="form-group">
+                        <input id="txtPassword" type="password" name="txtPassword"   class="form-control my-input" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="txtConfirm"   class="form-control my-input" placeholder="Confirm Password">
+                    </div>
+                    <div class="text-center ">
+                        <button id="submit" type="submit" class="btn btn-block btn-outline-primary">Create Your Free Account</button>
+                    </div>
+
+
+                </form>
+
+                <br>
+                <div id="message"></div>
+
+            </div>
+        </div>
+
+        <script src="./resource/home/vendor/jquery/jquery.min.js"></script>
+        <script src="./resource/home/vendor/bootstrap/js/bootstrap.min.js"></script>
+        <script src="./resource/js/jquery-1.12.0.min.js" crossorigin="anonymous"></script>
+        <script src="./resource/js/jquery.validate.min.js"></script>
+        <script src="./resource/js/additional-methods.min.js"></script>
+
+        <script type="text/javascript">
+                    $().ready((function () {
+                        $('#signupForm').validate({
+                            rules: {
+                                txtEmail: {
+                                    required: true,
+                                    email: true
+                                },
+                                txtFullName: {
+                                    required: true,
+                                    rangelength: [6, 50]
+                                },
+                                txtPassword: {
+                                    required: true,
+                                    rangelength: [6, 30]
+                                },
+                                txtConfirm: {
+                                    equalTo: "#txtPassword"
+                                },
+                            },
+                            submitHandler: function (form) {
+                                $.ajax({
+                                    type: form.method,
+                                    url: form.action,
+                                    data: $(form).serialize(),
+                                    success: function (data) {
+                                        var status = data.status;
+                                        var msg = data.message;
+                                        alert(msg);
+                                        if (status===1){
+                                            window.location.href="login";
+                                        }
+                                    }
+                                });
+
+                            }
+                        })
+                    })
+                            );
+                    $('#submit').click(function () {
+                        if ($('#txtPassword').val() != "" && !$('#txtPassword').valid()) {
+                            $('#txtPassword').val("");
+                            $('#txtConfirm').val("");
+                        }
+
+                    });
+
+        </script>
+    </body>
+</html>
