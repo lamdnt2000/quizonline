@@ -1,16 +1,15 @@
 package com.quizonline.group8.model;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
 @Data
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,6 +25,7 @@ public class QuizCategory implements Serializable {
     private String examName;
 
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "subject_id")
     private Subject subject;
 
     @OneToMany(mappedBy = "quizcategory")

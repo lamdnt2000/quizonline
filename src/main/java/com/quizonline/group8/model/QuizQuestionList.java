@@ -1,27 +1,24 @@
 package com.quizonline.group8.model;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Data
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
 public class QuizQuestionList implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long qql_Id;
 
     private Integer memResult;
 
+    @Id
     @ManyToOne(fetch =  FetchType.EAGER)
+    @JoinColumn(name = "quest_id")
     private Question question;
-
+    @Id
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 }

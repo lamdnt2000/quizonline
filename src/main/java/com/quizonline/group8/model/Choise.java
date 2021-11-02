@@ -1,14 +1,11 @@
 package com.quizonline.group8.model;
 
 import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Data
-@Slf4j
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
