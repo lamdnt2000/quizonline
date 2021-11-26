@@ -1,11 +1,12 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Set;
+import java.util.Collection;
 
 @Entity
 @Data
@@ -18,15 +19,13 @@ import java.util.Set;
 public class Member implements Serializable {
 
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String email;
     private String password;
     private String fullname;
-    private Long role_id;
     private String status;
     @JsonIgnore
-    @ManyToMany
-    private Set<Quiz> quiz;
+    @OneToMany(mappedBy = "member")
+    private Collection<Quiz> quizzes;
     @JsonIgnore
     @ManyToOne(fetch =  FetchType.EAGER)
     @JoinColumn(name = "role_Id")

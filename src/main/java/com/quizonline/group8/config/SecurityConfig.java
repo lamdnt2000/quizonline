@@ -1,16 +1,13 @@
 package com.quizonline.group8.config;
 
 import com.quizonline.group8.authority.MemberServiceApp;
-
 import com.quizonline.group8.jwt.JwtConfig;
 import com.quizonline.group8.jwt.TokenVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -70,7 +67,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAfter(new TokenVerifier(jwtConfig.secretKey(), jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/user/authenticate", "/user/register")
+                .antMatchers("/**")
                 .permitAll().anyRequest().authenticated();
     }
 
