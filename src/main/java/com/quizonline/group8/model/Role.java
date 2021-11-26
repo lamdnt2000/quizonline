@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,7 +17,7 @@ public class Role implements Serializable {
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long role_Id;
     private String roleName;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "roles")
     private Collection<Member> members;
 }

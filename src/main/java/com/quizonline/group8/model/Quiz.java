@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +36,7 @@ public class Quiz implements Serializable {
     @ManyToOne(fetch =  FetchType.EAGER)
     @JoinColumn(name = "exam_Id")
     private QuizCategory quizcategory;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "quiz")
     private Collection<QuizQuestionList> quizQuestionLists;
 
