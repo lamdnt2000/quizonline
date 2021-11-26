@@ -1,28 +1,35 @@
 package com.quizonline.group8.model;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Collection;
-
+import java.util.Set;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
+@Slf4j
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class Member implements Serializable {
+
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String email;
     private String password;
     private String fullname;
+    private Long role_id;
     private String status;
-
-    @OneToMany(mappedBy = "member")
-    private Collection<Quiz> quizzes;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "role_id")
+    @JsonIgnore
+    @ManyToMany
+    private Set<Quiz> quiz;
+    @JsonIgnore
+    @ManyToOne(fetch =  FetchType.EAGER)
+    @JoinColumn(name = "role_Id")
     private Role roles;
+
 }

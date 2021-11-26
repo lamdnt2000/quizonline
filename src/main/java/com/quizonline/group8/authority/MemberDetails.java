@@ -1,58 +1,53 @@
-package com.quizonline.group8.service;
+package com.quizonline.group8.authority;
 
 import com.quizonline.group8.model.Member;
-import com.quizonline.group8.model.Role;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
+
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
-
+@AllArgsConstructor
 public class MemberDetails implements UserDetails {
+    @Autowired
     private Member member;
-
-    public MemberDetails(Member member) {
-        this.member = member;
-        
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("user"));
-        return authorities;
+        SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(member.getRoles().getRoleName());
+        return Arrays.asList(simpleGrantedAuthority);
     }
 
     @Override
     public String getPassword() {
-        return null;
+        return member.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return member.getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

@@ -18,4 +18,5 @@ public class Role implements Serializable {
 
     @OneToMany(mappedBy = "roles")
     private Collection<Member> members;
+
 }
