@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -21,7 +20,6 @@ public class QuizCategory implements Serializable {
     private Timestamp timeCreate;
     private Long examTime;
     private Integer numQuest;
-    private String subjectID;
     private String examName;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -1,7 +1,10 @@
 package com.quizonline.group8.model;
 
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -9,7 +12,6 @@ import java.util.Collection;
 
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter

@@ -1,18 +1,16 @@
 package com.quizonline.group8.model;
 
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -20,7 +18,7 @@ import java.util.Set;
 public class Quiz implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer quiz_Id;
+    private Long quiz_Id;
     private Timestamp dateCreate;
     private Timestamp dateSubmit;
     private Integer status;
