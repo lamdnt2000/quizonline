@@ -21,7 +21,9 @@ public class Question implements Serializable {
     private Integer status;
     private Timestamp dateCreate;
     private Timestamp dateUpdate;
+    @JsonIgnore
     private String userCreate;
+    @JsonIgnore
     private String userUpdate;
 
     @JsonIgnore

@@ -1,11 +1,10 @@
 package com.quizonline.group8.controller;
 
+import com.quizonline.group8.common.Constants;
 import com.quizonline.group8.dto.LoginDTO;
 import com.quizonline.group8.dto.LoginReponseDTO;
 import com.quizonline.group8.dto.RegisterDTO;
-import com.quizonline.group8.dto.ReponseDTO;
-import com.quizonline.group8.enumcode.ErrorCode;
-import com.quizonline.group8.enumcode.SuccessCode;
+import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.jwt.JwtConfig;
 import com.quizonline.group8.model.Member;
 import com.quizonline.group8.service.MemberServiceImpl;
@@ -47,8 +46,8 @@ public class LoginController {
 
     @PostMapping("/authenticate")
     @PermitAll
-    public ResponseEntity<ReponseDTO> Login(@Valid @RequestBody LoginDTO loginDTO){
-        ReponseDTO reponseDTO = new ReponseDTO();
+    public ResponseEntity<ResponseDTO> Login(@Valid @RequestBody LoginDTO loginDTO){
+        ResponseDTO reponseDTO = new ResponseDTO();
         Authentication authentication = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authentication);
         try {
@@ -66,11 +65,11 @@ public class LoginController {
                         .token(jwtConfig.getTokenPrefix() + token)
                         .build();
                 reponseDTO.setData(loginReponseDTO);
-                reponseDTO.setSuccessCode(SuccessCode.LOGIN);
+                reponseDTO.setSuccessCode(Constants.SUCCESS_CODE);
                 return ResponseEntity.ok().body(reponseDTO);
             }
             else {
-                reponseDTO.setErrorCode(ErrorCode.LOGIN_FAIL);
+                reponseDTO.setErrorCode(Constants.FAIL_CODE);
                 return ResponseEntity.ok().body(reponseDTO);
             }
         }catch (Exception e){
@@ -80,15 +79,15 @@ public class LoginController {
 
     @PostMapping("/register")
     @PermitAll
-    public ResponseEntity<ReponseDTO> register(@RequestBody RegisterDTO registerDTO){
-        ReponseDTO reponseDTO = new ReponseDTO();
+    public ResponseEntity<ResponseDTO> register(@RequestBody RegisterDTO registerDTO){
+        ResponseDTO reponseDTO = new ResponseDTO();
         if(registerDTO != null){
             memberServices.save(registerDTO);
-            reponseDTO.setSuccessCode(SuccessCode.REGISTER);
+            reponseDTO.setSuccessCode(Constants.SUCCESS_CODE);
             return ResponseEntity.ok().body(reponseDTO);
         }
         else{
-            reponseDTO.setErrorCode(ErrorCode.REGISTER_FAIL);
+            reponseDTO.setErrorCode(Constants.FAIL_CODE);
             return ResponseEntity.ok().body(reponseDTO);
         }
     }

@@ -1,21 +1,21 @@
 package com.quizonline.group8.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
 import com.quizonline.group8.dto.ResponeChoiceDTO;
-import com.quizonline.group8.dto.ResponeDTO;
+import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.dto.ResponeQuestionDTO;
 import com.quizonline.group8.model.Choise;
 import com.quizonline.group8.model.Question;
 import com.quizonline.group8.model.Subject;
 import com.quizonline.group8.repository.SubjectRepo;
-import com.quizonline.group8.service.ChoiceServiceImpl;
-import com.quizonline.group8.service.QuestionServiceImpl;
+import com.quizonline.group8.service.impl.ChoiceServiceImpl;
+import com.quizonline.group8.service.impl.QuestionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class QuestionController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResponeDTO> createQuestion(@RequestBody ResponeQuestionDTO dto){
+    public ResponseEntity<ResponseDTO> createQuestion(@RequestBody ResponeQuestionDTO dto){
         try {
             // check sub_id
             Subject check = dto.getSubject_id();
@@ -67,10 +67,10 @@ public class QuestionController {
                     option.setQuestion(question);
                     choiceService.createAnswer(option);
                 }
-                ResponeDTO responeDTO = new ResponeDTO();
-                responeDTO.setData(question);
-                responeDTO.setSuccessCode("Question create Successful!");
-                return ResponseEntity.ok().body(responeDTO);
+                ResponseDTO responseDTO = new ResponseDTO();
+                responseDTO.setData(question);
+                responseDTO.setSuccessCode("Question create Successful!");
+                return ResponseEntity.ok().body(responseDTO);
             }
         }catch(Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
@@ -79,8 +79,8 @@ public class QuestionController {
 
 
     @PutMapping("/update/{quest_id}")
-    public ResponseEntity<ResponeDTO> updateQuestion(@PathVariable("quest_id") Long quest_id,
-                                                     @RequestBody ResponeQuestionDTO dto){
+    public ResponseEntity<ResponseDTO> updateQuestion(@PathVariable("quest_id") Long quest_id,
+                                                      @RequestBody ResponeQuestionDTO dto){
         try {
             Question question = new Question();
             question.setQuestionTitle(dto.getQuestionTitle());
@@ -88,9 +88,9 @@ public class QuestionController {
             question.setStatus(dto.getStatus());
             question.setDateUpdate(dto.getDateUpdate());
             question.setUserUpdate(dto.getUserUpdate());
-            ResponeDTO responeDTO = new ResponeDTO();
-            responeDTO = questionService.updateQuestion( quest_id,question);
-            return  ResponseEntity.ok().body(responeDTO);
+            ResponseDTO responseDTO = new ResponseDTO();
+            responseDTO = questionService.updateQuestion( quest_id,question);
+            return  ResponseEntity.ok().body(responseDTO);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }

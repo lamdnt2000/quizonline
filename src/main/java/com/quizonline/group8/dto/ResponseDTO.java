@@ -1,7 +1,5 @@
 package com.quizonline.group8.dto;
 
-import com.quizonline.group8.enumcode.ErrorCode;
-import com.quizonline.group8.enumcode.SuccessCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReponseDTO {
+public class ResponseDTO {
+    private String successCode;
     private Object data;
-    private SuccessCode successCode;
-    private ErrorCode errorCode;
+    private String errorCode;
+
 }
