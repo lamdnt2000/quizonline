@@ -13,7 +13,9 @@ public class Choise implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long choice_ID;
-    private Integer answer;
+    private String answer;
+    private Integer answernumber;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "quest_id")
     private Question question;

@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class Member implements Serializable {
     private String fullname;
     private String status;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "member")
     private Collection<Quiz> quizzes;
 
