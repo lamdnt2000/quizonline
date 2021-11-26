@@ -7,7 +7,7 @@ import com.quizonline.group8.dto.RegisterDTO;
 import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.jwt.JwtConfig;
 import com.quizonline.group8.model.Member;
-import com.quizonline.group8.service.MemberServiceImpl;
+import com.quizonline.group8.service.impl.MemberServiceImpl;
 import com.quizonline.group8.service.MemberServices;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;

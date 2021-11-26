@@ -6,7 +6,7 @@ import com.quizonline.group8.dto.ResponeQuestionDTO;
 import com.quizonline.group8.model.Choise;
 import com.quizonline.group8.model.Question;
 import com.quizonline.group8.model.Subject;
-import com.quizonline.group8.repository.SubjectRepo;
+import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.impl.ChoiceServiceImpl;
 import com.quizonline.group8.service.impl.QuestionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class QuestionController {
     private ChoiceServiceImpl choiceService;
 
     @Autowired
-    private SubjectRepo subjectRepo;
+    private SubjectRepository subjectRepository;
 
     @GetMapping("/get/{title}/{sub_ID}")
     public ResponseEntity<List<Question>> getByTitle(@PathVariable("title") String title,

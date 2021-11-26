@@ -2,21 +2,15 @@ package com.quizonline.group8.controller;
 
 import com.quizonline.group8.dto.ReponseDTO;
 import com.quizonline.group8.dto.ReponseSubjectDTO;
+import com.quizonline.group8.mapper.dto.SubjectDTO;
+import com.quizonline.group8.mapper.impl.SubjectResponseModelMapper;
+import com.quizonline.group8.mapper.resposemodel.SubjectResponseModel;
 import com.quizonline.group8.model.Subject;
-import com.quizonline.group8.repository.SubjectReponsitory;
+import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.quizonline.group8.mapper.dto.SubjectDTO;
-import com.quizonline.group8.mapper.impl.SubjectResponseModelMapper;
-import com.quizonline.group8.mapper.resposemodel.SubjectResponseModel;
-import com.quizonline.group8.service.SubjectService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -24,44 +18,28 @@ import java.util.List;
 @RequestMapping(path = "/api/subject")
 public class SubjectController {
     @Autowired
-    SubjectService subjectService;
+    private SubjectResponseModelMapper subjectResponseModelMapper;
     @Autowired
-    SubjectReponsitory subjectReponsitory;
-    //        @RequestMapping("/")
-//    public ModelAndView index(){
-//        return new ModelAndView("viewsubject","listSubject",subjectReponsitory.findAll());
-//    }
+    private SubjectService subjectService;
+
+    @Autowired
+    SubjectRepository subjectRepository;
+
     @GetMapping(value="/")
     public ResponseEntity<List<Subject>> viewSubject(){
 
-        return ResponseEntity.ok().body(subjectReponsitory.findAll());
+        return ResponseEntity.ok().body(subjectRepository.findAll());
     }
-    //
-//    @PostMapping("/saveSubject")    @RequestMapping(value="/",method= RequestMethod.GET)
-//    public String initPage(Model model){
-//        Subject subject=new Subject();
-//        model.addAttribute("subject",subject);
-//        return "viewsubject";
-//    }
-//    public String saveSubject(@ModelAttribute("subject") Subject subject){
-//        subjectService.saveSubject(subject);
-//        return "redirect:/api/subject/";
-//    }
+
     @PostMapping(value="/createsubject")
     public ResponseEntity<ReponseDTO> save(@RequestBody ReponseSubjectDTO dto){
-//        Subject createSubject = subjectService.saveSubject(subject);
-//        if (createSubject == null) {
-//            return ResponseEntity.notFound().build();
-//        } else {
-//        return ResponseEntity.ok().body(createSubject);
-//               }
-        Subject subject1=new Subject();
-        subject1.setSubject_Id(dto.getSubject_Id());
-        subject1.setSubjectName(dto.getSubjectName());
-        subject1.setDateCreate(dto.getDateCreate());
-        subject1=subjectService.saveSubject(subject1);
+        Subject subject=new Subject();
+        subject.setSubject_Id(dto.getSubject_Id());
+        subject.setSubjectName(dto.getSubjectName());
+        subject.setDateCreate(dto.getDateCreate());
+        subject=subjectService.saveSubject(subject);
         ReponseDTO reponseDTO=new ReponseDTO();
-        reponseDTO.setData(subject1);
+        reponseDTO.setData(subject);
         reponseDTO.setSuccessCode("create subject success");
         return ResponseEntity.ok().body(reponseDTO);
     }
@@ -71,15 +49,6 @@ public class SubjectController {
         return ResponseEntity.ok().body(subjectService.getSubById(subject_Id));
     }
 
-}
-
-@RequestMapping("/api/subject")
-public class SubjectController {
-    @Autowired
-    private SubjectResponseModelMapper subjectResponseModelMapper;
-    @Autowired
-    private SubjectService subjectService;
-
     @GetMapping("/findAll")
     private ResponseEntity<List<SubjectResponseModel>> findAll(){
         List<SubjectDTO> subjectDTOS = this.subjectService.findAllSubject();
@@ -87,3 +56,4 @@ public class SubjectController {
         return ResponseEntity.ok(subjectResponseModels);
     }
 }
+
