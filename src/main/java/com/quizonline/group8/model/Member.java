@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,12 +23,11 @@ public class Member implements Serializable {
     private String email;
     private String password;
     private String fullname;
-    private Long role_id;
     private String status;
-
+    @JsonIgnore
     @ManyToMany
     private Set<Quiz> quiz;
-
+    @JsonIgnore
     @ManyToOne(fetch =  FetchType.EAGER)
     @JoinColumn(name = "role_Id")
     private Role roles;
