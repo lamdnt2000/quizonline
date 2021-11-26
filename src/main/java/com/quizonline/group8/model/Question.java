@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -23,6 +24,7 @@ public class Question implements Serializable {
     private String userCreate;
     private String userUpdate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "question")
     private Collection<Choise> choice;
 
@@ -30,6 +32,7 @@ public class Question implements Serializable {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "question")
     private Collection<QuizQuestionList> quizQuestionLists;
 }
