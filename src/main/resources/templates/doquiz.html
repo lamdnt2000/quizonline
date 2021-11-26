@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en" >
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title id="title"></title>
+
+        <!-- Bootstrap core CSS -->
+        <link th:href="@{home/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link th:href="@{home/css/shop-homepage.css}" rel="stylesheet">
+        <script th:src="@{admin/js/all.min.js}" crossorigin="anonymous"></script>
+
+    </head>
+
+    <body>
+
+        <!-- Navigation -->
+
+        <div th:replace="header::headerUser"/>
+
+
+
+        <!-- Page Content -->
+        <div class="container">
+            <br>
+            <div class="row">
+                <div class="col-md-3">
+                    <h2><span id="timer" class="badge badge-danger" data-seconds-left=""></span></h2>
+                </div>
+                <div class="col-md-3">
+                    <span id="nameQuiz" class="font-weight-bold text-primary"></span>
+                </div>
+                <div class="col-md-3">
+                    <span id="numQuest" class="font-weight-bold text-dark"></span>
+                </div>
+            </div>
+            <form th:action="@{/api/quiz/submitQuiz}" method="POST" id="endQuiz">
+                <input type="hidden" th:name="id" th:value="${param.id}"/>
+                <div class="row">
+                    <div class="col-md-12">
+  
+                        <div class="card text-white bg-dark" id="showQuestion">
+
+                        </div>
+
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-4 align-content-lg-end">
+                        <input type="submit" class="btn btn-primary"/>
+                    </div>
+                </div>
+            </form>
+            <!-- /.row -->
+            <br>
+            <div class="row">
+                <div class="col-sm-12 col-md-7">
+                    <input type="hidden" id="page" name="page" value="1"/>
+                    <div id="paper">
+                        <ul id="pagination" class="paginaion-sm">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- /.container -->
+
+        <!-- Footer -->
+
+
+        <!-- Bootstrap core JavaScript -->
+        <script th:src="@{admin/js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{admin/js/scripts.js}"></script>
+        <script th:src="@{js/jquery-1.12.0.min.js}"></script>
+        <script th:src="@{js/jquery.simple.timer.js}"></script>
+        <script th:src="@{js/jquery.twbsPagination.min.js}" crossorigin="anonymous"></script>
+
+        <script type="text/javascript" th:inline="javascript">
+            var examId = [[${param.id}]];
+            var totalRow;
+            var timeCountDown;
+            var startPage = $('#page').val();
+            var rowPerPage = 1;
+            var count = 1;
+            var timeTakeQuiz;
+
+
+            $.ajax({
+                type: "GET",
+                url: "api/quiz/quizDetail?id="+`${examId}`,
+                async: false,
+                success: function (data) {
+                    var quizcategory = data.quizcategory;
+                    totalRow = quizcategory.numQuest;
+                    timeCountDown = parseInt(quizcategory.examTime);
+                    var dateTakeQuiz = new Date(data.dateCreate);
+                    dateTakeQuiz.setMinutes(dateTakeQuiz.getMinutes()+timeCountDown);
+                    $('#timer').attr("data-seconds-left", (dateTakeQuiz.getTime()-new Date().getTime())/1000);
+                    $('#nameQuiz').html(`Subject: ${quizcategory.subject.subjectName} - ${quizcategory.examName}`);
+                    $('#numQuest').html(`Total Question: ${totalRow}`);
+                }
+            });
+            $(function () {
+                $('#timer').startTimer({
+                    onComplete: function () {
+                        $('#endQuiz').submit();
+                    },
+                    elementContainer: "span"
+                });
+            });
+            var totalPage = Math.ceil(totalRow/rowPerPage);
+
+            $('#pagination').twbsPagination({
+                startPage: parseInt(startPage),
+                totalPages: totalPage,
+                visiblePages: 5,
+                hideOnlyOnePage: true,
+                prev: '<span aria-hidden="true">&laquo;</span>',
+                next: '<span aria-hidden="true">&raquo;</span>',
+                onPageClick: function (event, page) {
+                    window.scrollTo(0,0);
+                    $('.group' + $('#page').val()).hide();
+                    loadAjax(page);
+                    $('#page').val(page);
+                }
+
+            });
+
+
+
+            function loadAjax(page) {
+                if ($('.group' + page).length === 0) {
+                    var data = {};
+                    data['examId'] = `${examId}`;
+                    data['page'] = page-1;
+                    $.ajax({
+                        type: "GET",
+                        url: "api/quiz/question",
+                        data: data,
+                        async: false,
+                        success: function (data) {
+                            data.forEach(function (item) {
+                                var question = item.question;
+                                var title = question.questionTitle;
+                                var id = question.quest_ID;
+                                var listChoice = $.map(question.choice, function (value, index) {
+                                    return [value];
+                                });
+                                var choiceHtml='';
+                                listChoice.forEach(choice=>choiceHtml=choiceHtml+'<div class="row">\n\
+                                                                <div class="col-sd-1 form-check">\n\
+                                                                <input name='+`"${id}"`+' class="form-check-input" type="radio" value="'+choice.answerNumber+'" size="1"/>\n\
+                                                                <label class="form-check-label" for="'+choice.answerNumber+'">'+choice.answerNumber+'.</label>\n\
+                                                                </div>\n\
+                                                                <div class="col-md-10">\n\
+                                                                <p class="font-italic text-light">' + choice.answer + '</p>\n\
+                                                                </div>\n\
+                                                                </div>'
+                                );
+
+                                $('#showQuestion').append('<div class="card-body group' + page + '" id="' + (count++) + '">\n\
+                            <input type="hidden" name="questIds[]" value="' + id + '"/>\n\
+                            <h5 class="card-title"><p class="font-weight-bold text-success">' + title + '</p></h5>'+
+                                choiceHtml+
+                            '<hr></div>');
+
+                            });
+
+                        }
+                    });
+                } else {
+                    $('.group' + page).show();
+                }
+            }
+        </script>
+
+
+    </body>
+
+</html>

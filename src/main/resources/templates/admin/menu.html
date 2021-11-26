@@ -1,0 +1,38 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en">
+<div id="layoutSidenav_nav" th:fragment="menuAdmin">
+    
+    <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+        <div class="sb-sidenav-menu">
+            <div class="nav">
+                <div class="sb-sidenav-menu-heading"><font color="red">Welcome,  </font> </div>
+
+                <div class="sb-sidenav-menu-heading">Manage Exam</div>
+                <a class="nav-link" th:href="@{createsubject}">
+                    <div class="sb-nav-link-icon"></div>
+                    Create Subject
+                </a>
+                 <a class="nav-link" th:href="@{createexam}">
+                    <div class="sb-nav-link-icon"></div>
+                    Create Exam
+                </a>
+
+                <div class="sb-sidenav-menu-heading">Manage Quiz</div>
+                <a class="nav-link"th:href="@{createquestion}">
+                    <div class="sb-nav-link-icon"></div>
+                    Create Question
+                </a>
+                <a class="nav-link" th:href="@{question}">
+                    <div class="sb-nav-link-icon"></div>
+                    Question
+                </a>
+                <div class="sb-sidenav-menu-heading">Setting</div>
+                <a class="nav-link" th:href="@{logout}">
+                    <div class="sb-nav-link-icon"></div>
+                    Log out
+                </a>
+            </div>
+        </div>
+        
+    </nav>
+</div>

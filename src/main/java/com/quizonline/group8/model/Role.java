@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
@@ -19,4 +18,5 @@ public class Role implements Serializable {
 
     @OneToMany(mappedBy = "roles")
     private Collection<Member> members;
+
 }

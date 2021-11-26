@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en" >
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Dashboard - Create Question</title>
+        <link th:href="@{css/styles.css}" rel="stylesheet" />
+        <script th:src="@{js/all.min.js}" crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+        <div th:replace="admin/header::headerAdmin"/>
+        <div id="layoutSidenav">
+            <div th:replace="admin/menu::menuAdmin"/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+                        <h1 class="mt-4">Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Question/Create Question</li>
+                        </ol>
+
+                        <div class="row">
+                            <div class="col-xl-10">
+
+
+                                <form th:action="@{/admin/create}" method="POST" th:object="${question}" id="questionForm" >
+                                    <small class="text-dark">Question Title</small><br>
+                                    <input id="txtQuestionTitle" type="text" th:field="*{questionTitle}" placeholder="Question title" class="form-control form-control-sm" />
+
+                                   <small class="text-dark">Subject</small>
+                                        <select class="custom-select" id="subject" >
+                                            <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}"></option>
+                                        </select>
+
+
+                                    <small class="text-dark">Answer Option</small><br>
+
+                                        <div class="row justify-content-center" th:each="option,state:*{choice}">
+                                            <div class="col-md-1">
+                                                <input type="radio" th:field="*{choice[__${state.index}__].answerNumber}"  th:value="${state.index+1}" /> <!--checked="true"-->
+                                            </div>
+                                            <div class="col-md-9">
+
+                                                <input type="text" th:field="*{choice[__${state.index}__].answer}" placeholder="Answer content " class="form-control form-control-sm"/>
+                                            </div>
+                                            <br>
+                                            <br>
+                                        </div>
+
+
+                                    <small class="text-dark">Status</small><br>
+                                    <input type="checkbox"  id="status" disabled="true" checked/>
+                                    <label for="status">Active</label><br><br>
+
+                                    <button id="submit" type="submit" class="btn btn-primary">Create Question</button>
+
+                                </form>
+                                <br>
+           
+                            </div>
+
+                        </div>
+
+                    </div>
+                </main>
+                <div th:replace="admin/footer::footerAdmin"/>
+            </div>
+        </div>
+        <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{js/scripts.js}"></script>
+        <script th:src="@{js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{js/jquery.validate.min.js}"></script>
+        <script th:src="@{js/additional-methods.min.js}"></script>
+
+        <script type="text/javascript">
+            /*$().ready(function () {
+                $('#questionForm').validate({
+                    rules: {
+                        txtQuestionTitle: {
+                            required: true,
+                            rangelength: [5, 255]
+                        },
+                        subjectId: {
+                            required: true,
+
+                        },
+                        answer: {
+                            required: true,
+                            digits: true
+
+                        },
+                        txtOption1: {
+                            required: true,
+                            rangelength: [1, 255]
+                        },
+                        txtOption2: {
+                            required: true,
+                            rangelength: [1, 255]
+                        },
+                        txtOption3: {
+                            required: true,
+                            rangelength: [1, 255]
+                        },
+                        txtOption4: {
+                            required: true,
+                            rangelength: [1, 255]
+                        }
+                        
+                    },
+                    submitHandler: function (form) {
+                            $.ajax({
+                                type: form.method,
+                                url: form.action,
+                                data: $(form).serialize(),
+                                success: function (data) {
+
+                                    alert(data.message);
+                                    window.location.reload();
+                                }
+                            });
+                        }
+                });
+
+            }
+            );*/
+        </script>
+    </body>
+</html>

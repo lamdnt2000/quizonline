@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -8,7 +9,6 @@ import java.util.Collection;
 
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter @Setter
@@ -21,9 +21,12 @@ public class Question implements Serializable {
     private Integer status;
     private Timestamp dateCreate;
     private Timestamp dateUpdate;
+    @JsonIgnore
     private String userCreate;
+    @JsonIgnore
     private String userUpdate;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "question")
     private Collection<Choise> choice;
 
@@ -31,6 +34,7 @@ public class Question implements Serializable {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "question")
     private Collection<QuizQuestionList> quizQuestionLists;
 }
