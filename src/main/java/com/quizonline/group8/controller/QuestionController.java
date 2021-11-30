@@ -1,12 +1,11 @@
 package com.quizonline.group8.controller;
 
 import com.quizonline.group8.dto.ResponeChoiceDTO;
-import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.dto.ResponeQuestionDTO;
+import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.model.Choise;
 import com.quizonline.group8.model.Question;
 import com.quizonline.group8.model.Subject;
-import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.impl.ChoiceServiceImpl;
 import com.quizonline.group8.service.impl.QuestionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +28,6 @@ public class QuestionController {
 
     @Autowired
     private ChoiceServiceImpl choiceService;
-
-    @Autowired
-    private SubjectRepository subjectRepository;
 
     @GetMapping("/get/{title}/{sub_ID}")
     public ResponseEntity<List<Question>> getByTitle(@PathVariable("title") String title,

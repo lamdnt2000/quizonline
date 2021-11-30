@@ -22,7 +22,7 @@ import java.util.Optional;
 public class QuestionServiceImpl implements QuestionService {
     @Autowired
     private QuestionRepo questionRepo;
-
+    @Autowired
     private ChoiceServiceImpl choiceService;
     @Autowired
     private QuestionRepository questionRepository;

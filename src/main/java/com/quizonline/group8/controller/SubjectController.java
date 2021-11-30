@@ -25,12 +25,6 @@ public class SubjectController {
     @Autowired
     SubjectRepository subjectRepository;
 
-    @GetMapping(value="/")
-    public ResponseEntity<List<Subject>> viewSubject(){
-
-        return ResponseEntity.ok().body(subjectRepository.findAll());
-    }
-
     @PostMapping(value="/createsubject")
     public ResponseEntity<ReponseDTO> save(@RequestBody ReponseSubjectDTO dto){
         Subject subject=new Subject();

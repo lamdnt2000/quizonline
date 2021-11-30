@@ -65,10 +65,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterAfter(new TokenVerifier(jwtConfig.secretKey(), jwtConfig), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new TokenVerifier(jwtConfig.secretKey(), jwtConfig,memberServiceApp), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers("/**")
                 .permitAll().anyRequest().authenticated();
     }
+
+
 
 }

@@ -23,15 +23,12 @@ public class SubjectServiceImpl implements SubjectService {
         List<SubjectDTO> subjectDTOS = this.subjectDTOMapper.toDTO(subjects);
         return subjectDTOS;
     }
+
     @Override
-    public List<Subject> getAllSubject(){
-        return subjectRepository.findAll();
+    public Subject saveSubject(Subject subject) {
+        return subjectRepository.save(subject);
     }
-    @Override
-    public Subject saveSubject(Subject subject){
-        this.subjectRepository.save(subject);
-        return subject;
-    }
+
     @Override
     public Subject getSubById(Long subject_Id){
         Optional<Subject> optional=subjectRepository.findById(subject_Id);

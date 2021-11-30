@@ -1,5 +1,6 @@
 package com.quizonline.group8.controller;
 
+import com.quizonline.group8.dto.LoginDTO;
 import com.quizonline.group8.mapper.impl.QuestionResponseModelMapper;
 import com.quizonline.group8.mapper.resposemodel.ChoiceResponseModel;
 import com.quizonline.group8.mapper.resposemodel.QuestionResponseModel;
@@ -7,6 +8,7 @@ import com.quizonline.group8.model.Subject;
 import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +28,8 @@ public class BaseController {
     private QuestionService questionService;
 
     @RequestMapping("/")
-    public String index(){
+    public String index(Authentication authentication){
+        
         return showSubject();
     }
 
@@ -48,6 +51,18 @@ public class BaseController {
     @GetMapping("/header")
     public String getHeader(){
         return "header";
+    }
+
+    @GetMapping("/signin")
+    public String getSignin(Model model){
+        LoginDTO loginDTO = new LoginDTO();
+        model.addAttribute("login",loginDTO);
+        return "signin";
+    }
+
+    @GetMapping("/signout")
+    public String getSignout(){
+        return "signout";
     }
 
     @GetMapping("/history")
