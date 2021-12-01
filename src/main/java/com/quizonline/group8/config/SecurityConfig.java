@@ -67,8 +67,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAfter(new TokenVerifier(jwtConfig.secretKey(), jwtConfig,memberServiceApp), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/**")
-                .permitAll().anyRequest().authenticated();
+                .antMatchers("/signin","/signup")
+                .permitAll().anyRequest().permitAll();
     }
 
 

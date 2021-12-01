@@ -26,7 +26,10 @@ public class MemberDetails implements UserDetails {
     public String getPassword() {
         return member.getPassword();
     }
-
+    @JsonIgnore
+    public Member getMember(){
+        return member;
+    }
     @Override
     public String getUsername() {
         return member.getEmail();

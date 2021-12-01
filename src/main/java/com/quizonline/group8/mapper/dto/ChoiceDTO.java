@@ -12,6 +12,6 @@ import java.io.Serializable;
 @Getter @Setter
 public class ChoiceDTO implements Serializable {
 
-    private Integer answerNumber;
+    private Integer answernumber;
     private String answer;
 }

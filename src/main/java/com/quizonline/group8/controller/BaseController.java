@@ -1,12 +1,14 @@
 package com.quizonline.group8.controller;
 
 import com.quizonline.group8.dto.LoginDTO;
+import com.quizonline.group8.dto.RegisterDTO;
 import com.quizonline.group8.mapper.impl.QuestionResponseModelMapper;
 import com.quizonline.group8.mapper.resposemodel.ChoiceResponseModel;
 import com.quizonline.group8.mapper.resposemodel.QuestionResponseModel;
 import com.quizonline.group8.model.Subject;
 import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.QuestionService;
+import com.quizonline.group8.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +33,7 @@ public class BaseController {
 
     @RequestMapping("/")
     public String index(Authentication authentication){
-        
+
         return showSubject();
     }
 
@@ -54,15 +58,24 @@ public class BaseController {
     }
 
     @GetMapping("/signin")
-    public String getSignin(Model model){
+    public ModelAndView getSignin(){
         LoginDTO loginDTO = new LoginDTO();
-        model.addAttribute("login",loginDTO);
-        return "signin";
+        return new ModelAndView("signin", "login",loginDTO);
     }
 
+    @GetMapping("/signup")
+    public ModelAndView getSignup(){
+        RegisterDTO registerDTO = new RegisterDTO();
+        return new ModelAndView("signup", "member",registerDTO);
+    }
+
+
     @GetMapping("/signout")
-    public String getSignout(){
-        return "signout";
+    public ModelAndView getSignout(HttpServletResponse response, HttpSession session){
+        session.invalidate();
+        CookieUtil.clear(response,"token");
+        LoginDTO loginDTO = new LoginDTO();
+        return new ModelAndView("redirect:/signin","login",loginDTO);
     }
 
     @GetMapping("/history")

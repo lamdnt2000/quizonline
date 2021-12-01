@@ -42,7 +42,7 @@
                     <span id="numQuest" class="font-weight-bold text-dark"></span>
                 </div>
             </div>
-            <form th:action="@{/api/quiz/submitQuiz}" method="POST" id="endQuiz">
+            <form  th:method="POST" id="endQuiz">
                 <input type="hidden" th:name="id" th:value="${param.id}"/>
                 <div class="row">
                     <div class="col-md-12">
@@ -99,7 +99,8 @@
                 type: "GET",
                 url: "api/quiz/quizDetail?id="+`${examId}`,
                 async: false,
-                success: function (data) {
+                success: function (response) {
+                    var data = response.data
                     var quizcategory = data.quizcategory;
                     totalRow = quizcategory.numQuest;
                     timeCountDown = parseInt(quizcategory.examTime);
@@ -110,16 +111,34 @@
                     $('#numQuest').html(`Total Question: ${totalRow}`);
                 }
             });
+            var totalPage = Math.ceil(totalRow/rowPerPage);
             $(function () {
                 $('#timer').startTimer({
-                    onComplete: function () {
-                        $('#endQuiz').submit();
-                    },
+                    onComplete: submitResult,
                     elementContainer: "span"
                 });
             });
-            var totalPage = Math.ceil(totalRow/rowPerPage);
-
+            $('#endQuiz').submit(
+                function(e) {
+                    e.preventDefault();
+                    submitResult();
+                })
+            function submitResult(){
+                $.ajax({
+                    type: "POST",
+                    url: "api/quiz/submitQuiz",
+                    async: false,
+                    data:$('form').serializeArray(),
+                    success: function (data) {
+                        if (data.successCode!=null){
+                            window.location.href="history"
+                        }
+                        else{
+                            alert(data.data);
+                        }
+                    }
+                });
+            }
             $('#pagination').twbsPagination({
                 startPage: parseInt(startPage),
                 totalPages: totalPage,
@@ -149,33 +168,36 @@
                         data: data,
                         async: false,
                         success: function (data) {
-                            data.forEach(function (item) {
-                                var question = item.question;
-                                var title = question.questionTitle;
-                                var id = question.quest_ID;
-                                var listChoice = $.map(question.choice, function (value, index) {
-                                    return [value];
-                                });
-                                var choiceHtml='';
-                                listChoice.forEach(choice=>choiceHtml=choiceHtml+'<div class="row">\n\
+                            if (data.successCode!=null) {
+                                data.data.forEach(function (item) {
+                                    var question = item.question;
+                                    var title = question.questionTitle;
+                                    var id = question.quest_ID;
+                                    var listChoice = $.map(question.choice, function (value, index) {
+                                        return [value];
+                                    });
+                                    var choiceHtml = '';
+                                    listChoice.forEach(choice => choiceHtml = choiceHtml + '<div class="row">\n\
                                                                 <div class="col-sd-1 form-check">\n\
-                                                                <input name='+`"${id}"`+' class="form-check-input" type="radio" value="'+choice.answerNumber+'" size="1"/>\n\
-                                                                <label class="form-check-label" for="'+choice.answerNumber+'">'+choice.answerNumber+'.</label>\n\
+                                                                <input name=' + `"${id}"` + ' class="form-check-input" type="radio" value="' + choice.answernumber + '" size="1"/>\n\
+                                                                <label class="form-check-label" for="' + choice.answernumber + '">' + choice.answernumber + '.</label>\n\
                                                                 </div>\n\
                                                                 <div class="col-md-10">\n\
                                                                 <p class="font-italic text-light">' + choice.answer + '</p>\n\
                                                                 </div>\n\
                                                                 </div>'
-                                );
+                                    );
 
-                                $('#showQuestion').append('<div class="card-body group' + page + '" id="' + (count++) + '">\n\
+                                    $('#showQuestion').append('<div class="card-body group' + page + '" id="' + (count++) + '">\n\
                             <input type="hidden" name="questIds[]" value="' + id + '"/>\n\
-                            <h5 class="card-title"><p class="font-weight-bold text-success">' + title + '</p></h5>'+
-                                choiceHtml+
-                            '<hr></div>');
-
-                            });
-
+                            <h5 class="card-title"><p class="font-weight-bold text-success">' + title + '</p></h5>' +
+                                        choiceHtml +
+                                        '<hr></div>');
+                                });
+                            }
+                            else{
+                                window.location.href="history";
+                            }
                         }
                     });
                 } else {

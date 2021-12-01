@@ -1,5 +1,7 @@
 package com.quizonline.group8.mapper.resposemodel;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.quizonline.group8.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +22,6 @@ public class QuizResponseModel implements Serializable {
     private Float total;
     private Long quizTime;
     private QuizCategoryResponseModel quizcategory;
+    @JsonIgnore
+    private Member member;
 }

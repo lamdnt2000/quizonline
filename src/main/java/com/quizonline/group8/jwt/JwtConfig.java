@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +23,6 @@ public class JwtConfig {
     private String tokenPrefix;
     private int tokenExpirationAfterDays;
 
-    public String getAuthorizationHeader(){
-        return HttpHeaders.AUTHORIZATION;
-    }
 
     public javax.crypto.SecretKey secretKey(){
         return Keys.hmacShaKeyFor(secretKey.getBytes());

@@ -11,6 +11,7 @@ import com.quizonline.group8.jwt.JwtConfig;
 import com.quizonline.group8.model.Member;
 import com.quizonline.group8.service.MemberServices;
 import com.quizonline.group8.service.impl.MemberServiceImpl;
+import com.quizonline.group8.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.PermitAll;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @RestController
@@ -48,7 +50,7 @@ public class LoginController {
 
     @PostMapping(value = "/authenticate",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @PermitAll
-    public ResponseEntity<ResponseDTO> Login(@Valid LoginDTO loginDTO){
+    public ResponseEntity<ResponseDTO> Login(@Valid LoginDTO loginDTO, HttpServletResponse response){
         ResponseDTO reponseDTO = new ResponseDTO();
         try {
             Authentication authentication = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(),loginDTO.getPassword());
@@ -65,6 +67,7 @@ public class LoginController {
                             .build();
                     reponseDTO.setData(loginReponseDTO);
                     reponseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+                CookieUtil.create(response,"token",token,true,86400);
 
             }
             else {
@@ -85,9 +88,9 @@ public class LoginController {
         }
     }
 
-    @PostMapping("/register")
+    @PostMapping(value="/register",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @PermitAll
-    public ResponseEntity<ResponseDTO> register(@RequestBody RegisterDTO registerDTO){
+    public ResponseEntity<ResponseDTO> register(@Valid RegisterDTO registerDTO){
         ResponseDTO reponseDTO = new ResponseDTO();
         if(registerDTO != null){
             memberServices.save(registerDTO);
