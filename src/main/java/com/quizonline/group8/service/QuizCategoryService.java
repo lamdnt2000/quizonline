@@ -11,5 +11,5 @@ public interface QuizCategoryService {
     List<QuizCategory> showQuiz();
     ResponseDTO updateQuiz(QuizCategory quizCategory, Long id);
     QuizCategory findQuizById(Long id);
-    List<QuizCategoryDTO> findQuizCategoryBySubjectId(Long id);
+//    List<QuizCategoryDTO> findQuizCategoryBySubjectId(Long id);
 }

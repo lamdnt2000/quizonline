@@ -11,9 +11,14 @@ import com.quizonline.group8.service.QuizCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -25,16 +30,16 @@ public class QuizCategoryController {
     private QuizCategoryResponseModelMapper quizCategoryResponseModelMapper;
     @Autowired
     private QuizCategoryService quizCategoryService;
-    @GetMapping("/find")
-    public ResponseEntity<List<QuizCategoryResponseModel>> findBySubject(@RequestParam(name="id") Optional<Long> subjectId){
-        Long id = subjectId.get();
-        List<QuizCategoryDTO> quizCategoryDTOS = quizCategoryService.findQuizCategoryBySubjectId(id);
-        List<QuizCategoryResponseModel> quizCategoryResponseModels = this.quizCategoryResponseModelMapper.toResponseModel(quizCategoryDTOS);
-        return ResponseEntity.ok(quizCategoryResponseModels);
-    }
+//    @GetMapping("/find")
+//    public ResponseEntity<List<QuizCategoryResponseModel>> findBySubject(@RequestParam(name="id") Optional<Long> subjectId){
+//        Long id = subjectId.get();
+//        List<QuizCategoryDTO> quizCategoryDTOS = quizCategoryService.findQuizCategoryBySubjectId(id);
+//        List<QuizCategoryResponseModel> quizCategoryResponseModels = this.quizCategoryResponseModelMapper.toResponseModel(quizCategoryDTOS);
+//        return ResponseEntity.ok(quizCategoryResponseModels);
+//    }
 
     @PostMapping(value = "/create")
-    public ResponseEntity<ResponseDTO> createQuiz(@RequestBody ResponseQuizCategoryDTO dto){
+    public ResponseEntity<ResponseDTO> createQuiz(@RequestBody @Valid ResponseQuizCategoryDTO dto){
         QuizCategory quizCategory = new QuizCategory();
         quizCategory.setExam_id(dto.getExam_id());
         quizCategory.setExamTime(dto.getExamTime());
@@ -53,7 +58,7 @@ public class QuizCategoryController {
     }
 
     @PutMapping(value = "/update/{id}")
-    public  ResponseEntity<ResponseDTO> updateQuiz(@RequestBody ResponseQuizCategoryDTO dto, @PathVariable("id") Long id){
+    public  ResponseEntity<ResponseDTO> updateQuiz(@Valid @RequestBody ResponseQuizCategoryDTO dto, @PathVariable("id") Long id){
         try{
             QuizCategory quizCategory = new QuizCategory();
             quizCategory.setTimeCreate(dto.getTimeCreate());
@@ -77,4 +82,16 @@ public class QuizCategoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
+
+//    @ResponseStatus(HttpStatus.BAD_REQUEST)
+//    @ExceptionHandler(MethodArgumentNotValidException.class)
+//    public Map<String, String> handleValidationException(MethodArgumentNotValidException ex){
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getAllErrors().forEach((error) -> {
+//            String fieldName = ((FieldError) error).getField();
+//            String errorMessage = error.getDefaultMessage();
+//            errors.put(fieldName, errorMessage);
+//        });
+//        return errors;
+//    }
 }

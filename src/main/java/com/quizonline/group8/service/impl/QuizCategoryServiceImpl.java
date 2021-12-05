@@ -17,17 +17,17 @@ import java.util.List;
 public class QuizCategoryServiceImpl implements QuizCategoryService {
     @Autowired
     private SubjectRepository subjectRepository;
-    @Autowired
-    private QuizCategoryMapper quizCategoryMapper;
+//    @Autowired
+//    private QuizCategoryMapper quizCategoryMapper;
     @Autowired
     private QuizCategoryRepository quizCategoryRepository;
-    @Override
-    public List<QuizCategoryDTO> findQuizCategoryBySubjectId(Long id) {
-        Subject subject = this.subjectRepository.findById(id).get();
-        List<QuizCategory> quizCategoryList = this.quizCategoryRepository.findBySubject(subject);
-        List<QuizCategoryDTO> quizCategoryDTOS = quizCategoryMapper.toDTO(quizCategoryList);
-        return quizCategoryDTOS;
-    }
+//    @Override
+//    public List<QuizCategoryDTO> findQuizCategoryBySubjectId(Long id) {
+//        Subject subject = this.subjectRepository.findById(id).get();
+//        List<QuizCategory> quizCategoryList = this.quizCategoryRepository.findBySubject(subject);
+//        List<QuizCategoryDTO> quizCategoryDTOS = quizCategoryMapper.toDTO(quizCategoryList);
+//        return quizCategoryDTOS;
+//    }
     @Override
     public QuizCategory createQuiz(QuizCategory quizCategory) {
         this.quizCategoryRepository.save(quizCategory);
