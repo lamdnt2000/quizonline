@@ -36,7 +36,6 @@ public class QuizServiceImpl implements QuizService {
     public QuizDTO createQuiz(Long examId) {
         QuizCategory quizCategory = this.quizCategoryRepository.findById(examId).get();
         Member member = UserSecurityUtil.getCurrentUser();
-        System.out.printf("1234: "+member.getEmail());
         if (Objects.nonNull(quizCategory)){
             Quiz quiz = new Quiz();
             quiz.setDateCreate(new Timestamp(new Date().getTime()));

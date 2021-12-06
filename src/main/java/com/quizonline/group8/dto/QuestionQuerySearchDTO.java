@@ -1,5 +1,6 @@
 package com.quizonline.group8.dto;
 
+import com.quizonline.group8.model.Subject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ResponeChoiceDTO {
-    private Long choice_ID;
-    private Integer answerNumber;
-    private String answer;
-//    private Long quest_Id;
+public class QuestionQuerySearchDTO {
+    private String title="";
+    private Subject subject;
+    private Integer page=1;
+    private Integer status=1;
 }

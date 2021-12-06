@@ -3,9 +3,9 @@
 <div id="layoutSidenav_nav" th:fragment="menuAdmin">
     
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-        <div class="sb-sidenav-menu">
+        <div class="sb-sidenav-menu" sec:authorize="isAuthenticated()">
             <div class="nav">
-                <div class="sb-sidenav-menu-heading"><font color="red">Welcome,  </font> </div>
+                <div class="sb-sidenav-menu-heading" th:text ="${#authentication.getPrincipal().getFullName()}"><font color="red">Welcome,  </font> </div>
 
                 <div class="sb-sidenav-menu-heading">Manage Exam</div>
                 <a class="nav-link" th:href="@{createsubject}">

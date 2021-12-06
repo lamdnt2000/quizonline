@@ -28,21 +28,22 @@
                             <div class="col-xl-10">
 
 
-                                <form th:action="@{/admin/create}" method="POST" th:object="${question}" id="questionForm" >
+                                <form th:method="POST" th:object="${question}" id="questionForm" >
                                     <small class="text-dark">Question Title</small><br>
                                     <input id="txtQuestionTitle" type="text" th:field="*{questionTitle}" placeholder="Question title" class="form-control form-control-sm" />
 
                                    <small class="text-dark">Subject</small>
-                                        <select class="custom-select" id="subject" >
+                                        <select class="custom-select" id="subject" th:field="*{subject}">
                                             <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}"></option>
                                         </select>
 
 
                                     <small class="text-dark">Answer Option</small><br>
-
+                                    <fieldset id="correctAnswer">
                                         <div class="row justify-content-center" th:each="option,state:*{choice}">
                                             <div class="col-md-1">
-                                                <input type="radio" th:field="*{choice[__${state.index}__].answerNumber}"  th:value="${state.index+1}" /> <!--checked="true"-->
+                                                <input type="radio" th:field="*{correctAnswer}"  th:value="${state.index+1}" /> <!--checked="true"-->
+                                                <input type="hidden" th:field="*{choice[__${state.index}__].answernumber}" th:value="${state.index+1}"/>
                                             </div>
                                             <div class="col-md-9">
 
@@ -51,7 +52,7 @@
                                             <br>
                                             <br>
                                         </div>
-
+                                    </fieldset>
 
                                     <small class="text-dark">Status</small><br>
                                     <input type="checkbox"  id="status" disabled="true" checked/>
@@ -71,63 +72,37 @@
                 <div th:replace="admin/footer::footerAdmin"/>
             </div>
         </div>
+
         <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
         <script th:src="@{js/scripts.js}"></script>
-        <script th:src="@{js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
-        <script th:src="@{js/jquery.validate.min.js}"></script>
-        <script th:src="@{js/additional-methods.min.js}"></script>
+        <script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{../js/jquery.validate.min.js}"></script>
+        <script th:src="@{../js/additional-methods.min.js}"></script>
 
         <script type="text/javascript">
-            /*$().ready(function () {
+            $().ready(function () {
                 $('#questionForm').validate({
                     rules: {
-                        txtQuestionTitle: {
-                            required: true,
-                            rangelength: [5, 255]
-                        },
-                        subjectId: {
-                            required: true,
-
-                        },
-                        answer: {
-                            required: true,
-                            digits: true
-
-                        },
-                        txtOption1: {
-                            required: true,
-                            rangelength: [1, 255]
-                        },
-                        txtOption2: {
-                            required: true,
-                            rangelength: [1, 255]
-                        },
-                        txtOption3: {
-                            required: true,
-                            rangelength: [1, 255]
-                        },
-                        txtOption4: {
-                            required: true,
-                            rangelength: [1, 255]
-                        }
-                        
                     },
                     submitHandler: function (form) {
                             $.ajax({
                                 type: form.method,
-                                url: form.action,
-                                data: $(form).serialize(),
+                                url: "../api/question/create",
+                                data: $(form).serializeArray(),
                                 success: function (data) {
-
-                                    alert(data.message);
-                                    window.location.reload();
+                                    if (data.successCode!=null){
+                                        window.location.href=""
+                                    }
+                                    else{
+                                        alert("Error");
+                                    }
                                 }
                             });
                         }
                 });
 
             }
-            );*/
+            );
         </script>
     </body>
 </html>

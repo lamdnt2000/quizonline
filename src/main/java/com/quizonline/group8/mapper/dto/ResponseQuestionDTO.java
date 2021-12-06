@@ -1,4 +1,4 @@
-package com.quizonline.group8.dto;
+package com.quizonline.group8.mapper.dto;
 
 import com.quizonline.group8.model.Subject;
 import lombok.AllArgsConstructor;
@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -13,18 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-
-public class ResponeQuestionDTO  {
-
+public class ResponseQuestionDTO implements Serializable {
     private Long quest_ID;
     private String questionTitle;
     private Integer correctAnswer;
-    private Integer status;
+    private Integer status=0;
     private Timestamp dateCreate;
-    private Timestamp dateUpdate;
-    private String userCreate;
-    private String userUpdate;
-    private Subject subject_id;
-    private List<ResponeChoiceDTO> choiceDTOS;
-
+    private Subject subject;
+    private List<ResponeChoiceDTO> choice;
+    private Boolean isDelete=false;
 }

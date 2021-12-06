@@ -26,33 +26,28 @@
                         <div id="message"></div>
                         <div class="row" >
                             <div class="col-md-12">
-                                <form action="" >
+                                <form th:method="GET" th:object="${search}" >
                                     <div class="row">
                                         <div class="col-md-12">
-                                            <input name="txtSearchTitle" class="form-control" placeholder="Search title" id="txtSearch" value="${param.txtSearchTitle}"/>
+                                            <input th:field="*{title}" class="form-control" placeholder="Search title" id="txtSearch" />
                                         </div>
                                     </div>
                                     <br>
                                     <div class="row">
 
                                         <div class="col-md-3">
-                                            <select class="custom-select" name="subjectId" id="subject">
-
+                                            <select class="custom-select" th:field="*{subject}">
+                                                <option th:each="sub: ${subjects}" th:value="${sub.subject_Id}" th:text="${sub.subjectName}"></option>
                                             </select>
                                         </div>
                                         <div class="col-md-3">
-                                            <select class="custom-select" name="status" id="status">
-                                                <option value="1"
-                                                        <c:if test="${param.status.equals('1')}">selected</c:if>
-                                                            >Active</option>
-                                                        <option value="0" 
-                                                        <c:if test="${param.status.equals('0')}">selected</c:if>
-                                                            >Disable</option>
-
+                                            <select class="custom-select" name="status" id="status" th:field="*{status}">
+                                                <option value="1">Active</option>
+                                                <option value="0">Disable</option>
                                                 </select>                                       
                                             </div>
                                             <div class="col-md-3 justify-content-end">
-                                                <button type="submit" class="btn btn-primary" onclick="this.form.action = 'ShowQuestion'">Search</button>
+                                                <button type="button" id="search" class="btn btn-primary">Search</button>
                                             </div>
                                             <div class="col-md-3">
                                                 <button type="button" class="btn btn-danger" id="deleteBtn" data-toggle="modal" data-target="delete">Delete</button>
@@ -88,17 +83,19 @@
 
                                             </div>
                                         </div>
-                                    </form> 
 
                                     <div class="row">
                                         <div class="col-sm-12 col-md-7">
-                                            <input type="hidden" id="page" name="page" value="1"/>
+                                            <input type="hidden" id="page" th:field="*{page}" value="1"/>
                                             <div id="paper">
                                                 <ul id="pagination" class="paginaion-sm">
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
+                                    </form> 
+
+
                                 </div>
                             </div>
 
@@ -112,8 +109,9 @@
         </div>
         <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
         <script th:src="@{js/scripts.js}"></script>
-        <script th:src="@{js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
-        <script th:src="@{js/jquery.twbsPagination.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{../js/jquery.twbsPagination.min.js}" crossorigin="anonymous"></script>
+    <script th:src="@{../js/moment.js}"></script>
         <Script>
                                                     $(document).ready(function () {
                                                         $("#mytable #checkall").click(function () {
@@ -131,99 +129,86 @@
                                                     });
         </script>
 
-        <script type="text/javascript">
-            $.ajax({
-                type: "GET",
-                url: "${applicationScope.PATHAPI}/ShowAllSubject",
-                async: false,
-                success: function (data) {
-
-                    data.forEach(function (item) {
-                        var subjectId = item.id;
-                        var checked = (subjectId === '${param.subjectId}') ? "selected" : "";
-                        $('#subject').append('<option value="' + subjectId + '"' + checked + '>' + subjectId + '</option>');
-                    });
-
-                }
-            });
-
-        </script>
-
         <script>
-            var subjectIdParam = $('#subject').val();
-            var statusParam = $('#status').val();
             var rowCount;
-            var searchTitleParam = $('#txtSearch').val();
-            var dataGet = {};
-            dataGet['subjectId'] = subjectIdParam;
-            dataGet['status'] = statusParam;
-            dataGet['txtSearchTitle'] = searchTitleParam;
-            $.ajax({
-                type: "GET",
-                url: "${applicationScope.PATHAPI}/GetDataForPaging",
-                data: dataGet,
-                async: false,
-                success: function (data) {
-                    rowCount = data.totalQuestion;
-                }
-            });
-            if (rowCount > 0) {
-                var startPage = $('#page').val();
-                var rowPerPage = 10;
-                var totalPage = Math.ceil(rowCount / rowPerPage);
-
-                $('#pagination').twbsPagination({
-                    startPage: parseInt(startPage),
-                    totalPages: totalPage,
-                    visiblePages: rowPerPage,
-
-                    hideOnlyOnePage: true,
-                    prev: '<span aria-hidden="true">&laquo;</span>',
-                    next: '<span aria-hidden="true">&raquo;</span>',
-                    onPageClick: function (event, page) {
-                        $("tbody").children().remove(),
-                                loadAjax(page),
-                                $('#page').val(page)
-                    }
-
-                });
-            }
-            else{
-                $("tbody").append("<p>No question found</p>");
-            }
-            function loadAjax(page) {
-                var data = {};
-                data['subjectId'] = subjectIdParam;
-                data['status'] = statusParam;
-                data['page'] = page;
-                data['txtSearchTitle'] = searchTitleParam;
+            function getCount() {
                 $.ajax({
                     type: "GET",
-                    url: "${applicationScope.PATHAPI}/ShowAllQuestion",
-                    data: data,
+                    url: "../api/question/count",
+                    headers: {"Content-type": "application/x-www-form-urlencoded"},
+                    data: $('form').serializeArray(),
+                    async: false,
+                    success: function (data) {
+                        rowCount = parseInt(data);
+                    }
+                });
+            }
+            function configPagination() {
+                if (rowCount > 0) {
+                    var startPage = $('#page').val();
+                    var rowPerPage = 5;
+                    var totalPage = Math.ceil(rowCount / rowPerPage);
+
+                    $('#pagination').twbsPagination({
+                        startPage: parseInt(startPage),
+                        totalPages: totalPage,
+                        visiblePages: 3,
+
+                        hideOnlyOnePage: true,
+                        prev: '<span aria-hidden="true">&laquo;</span>',
+                        next: '<span aria-hidden="true">&raquo;</span>',
+                        onPageClick: function (event, page) {
+                            $("tbody").children().remove(),
+                                $('#page').val(page),
+                                loadAjax(page)
+
+                        }
+
+                    });
+                } else {
+                    $("tbody").innerHTML='';
+                    $("tbody").append("<p>No question found</p>");
+                }
+            }
+            function loadAjax(page) {
+
+                $.ajax({
+                    type: "GET",
+                    url: "../api/question/search",
+                    headers:{"Content-type":"application/x-www-form-urlencoded"},
+                    data: $('form').serializeArray(),
                     async: true,
                     success: function (data) {
                         data.forEach(function (item) {
-                            var questionId = item.id;
+                            var questionId = item.quest_ID;
                             var questionTitle = item.questionTitle;
-                            var subjectId = item.subjectId;
+                            var subjectName = item.subject.subjectName;
                             var correctAnswer = item.correctAnswer;
-                            var dateCreate = item.dateCreate;
+                            var dateCreate = moment(item.dateCreate).format('DD/MM/YYYY-h:mm:ss a');
                             $('tbody').append('<tr>')
                                     .append('<td><input type="checkbox" class="checkthis" name="questionId" value="' + questionId + '" /></td>')
                                     .append('<td>' + questionTitle + '</td>')
-                                    .append('<td>' + subjectId + '</td>')
+                                    .append('<td>' + subjectName + '</td>')
                                     .append('<td>' + correctAnswer + '</td>')
                                     .append('<td>' + dateCreate + '</td>')
-                                    .append('<td><a class="btn btn-primary" href="GetQuestionProcess?id=' + questionId + '">Update</a></td>')
+                                    .append('<td><a class="btn btn-primary" href="questiondetail?id=' + questionId + '">Update</a></td>')
                                     .append('</tr>');
                         });
 
                     }
                 });
             }
-
-
+            getCount();
+            configPagination();
+            $('#search').click(
+                function(){
+                    $('#page').val(1);
+                    $('#pagination').twbsPagination('destroy');
+                    $("tbody").innerHTML='';
+                    getCount();
+                    configPagination();
+                }
+            );
             $('#deleteBtn').click(function () {
                 var questionId = [];
                 $("#mytable td input:checked").each(function ()
@@ -231,7 +216,7 @@
                     questionId.push($(this).val());
                 });
 
-                $.ajax({
+                /*$.ajax({
                     type: "POST",
                     url: "DeleteQuestionProcess",
                     cache: false,
@@ -243,7 +228,7 @@
 
                     }
                 });
-                setTimeout(location.reload(), 3000);
+                setTimeout(location.reload(), 3000);*/
             });
         </script>
     </body>
