@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Dashboard - Subject</title>
+    <link th:href="@{css/styles.css}" rel="stylesheet" />
+    <script th:src="@{js/all.min.js}" crossorigin="anonymous"></script>
+</head>
+<body>
+
+<div th:replace="admin/header::headerAdmin"/>
+<div id="layoutSidenav">
+    <div th:replace="admin/menu::menuAdmin"/>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid">
+                <h1 class="mt-4">Dashboard</h1>
+                <ol class="breadcrumb mb-4">
+                    <li class="breadcrumb-item active">Subject/ Show Subject</li>
+                </ol>
+                <div id="message"></div>
+                <div class="row" >
+                    <div class="col-md-12">
+                        <form th:method="GET" th:object="${search}" >
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <input name="title" th:field="*{title}" class="form-control" placeholder="Search title" id="txtSearch" />
+                                </div>
+
+                                <div class="col-md-4 justify-content-end">
+                                    <button type="button" id="search" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="row"></br></div>
+                            <div class="row">
+
+                                <div class="table-responsive">
+
+
+                                    <table id="mytable" class="table table-bordred table-striped">
+
+                                        <thead>
+
+                                        <th><input type="checkbox" id="checkall" /></th>
+                                        <th>Id</th>
+                                        <th>Subject</th>
+                                        <th>Date Create</th>
+                                        <th>Action</th>
+                                        </thead>
+                                        <tbody id="mainBody">
+
+
+                                        </tbody>
+
+                                    </table>
+
+
+
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-12 col-md-7">
+                                    <input type="hidden" id="page" th:field="*{page}" value="1"/>
+                                    <div id="paper">
+                                        <ul id="pagination" class="paginaion-sm">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+
+        <div th:replace="admin/footer::footerAdmin"/>
+    </div>
+
+</div>
+<script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
+<script th:src="@{js/scripts.js}"></script>
+<script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+<script th:src="@{../js/jquery.twbsPagination.min.js}" crossorigin="anonymous"></script>
+<script th:src="@{../js/moment.js}"></script>
+<Script>
+    $(document).ready(function () {
+        $("#mytable #checkall").click(function () {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function () {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+    });
+</script>
+
+<script>
+    var rowCount;
+    function getCount() {
+        $.ajax({
+            type: "GET",
+            url: "../api/subject/count",
+            headers: {"Content-type": "application/x-www-form-urlencoded"},
+            data: $('form').serializeArray(),
+            async: false,
+            success: function (data) {
+                rowCount = parseInt(data);
+            }
+        });
+    }
+    function configPagination() {
+        if (rowCount > 0) {
+            var startPage = $('#page').val();
+            var rowPerPage = 5;
+            var totalPage = Math.ceil(rowCount / rowPerPage);
+
+            $('#pagination').twbsPagination({
+                startPage: parseInt(startPage),
+                totalPages: totalPage,
+                visiblePages: 3,
+
+                hideOnlyOnePage: true,
+                prev: '<span aria-hidden="true">&laquo;</span>',
+                next: '<span aria-hidden="true">&raquo;</span>',
+                onPageClick: function (event, page) {
+                    $("tbody").children().remove(),
+                        $('#page').val(page),
+                        loadAjax(page)
+
+                }
+
+            });
+        } else {
+            $("tbody").children().remove();
+            $("tbody").append("<p>No subject found</p>");
+        }
+    }
+    function loadAjax(page) {
+
+        $.ajax({
+            type: "GET",
+            url: "../api/subject/search",
+            headers:{"Content-type":"application/x-www-form-urlencoded"},
+            data: $('form').serializeArray(),
+            async: true,
+            success: function (data) {
+                data.forEach(function (item) {
+                    var subId = item.subject_Id;
+                    var subjectName = item.subjectName;
+                    var dateCreate = moment(item.dateCreate).format('DD/MM/YYYY-h:mm:ss a');
+                    $('tbody').append('<tr>')
+                        .append('<td><input type="checkbox" class="checkthis" name="questionId" value="' + subId + '" /></td>')
+                        .append('<td>' + subId + '</td>')
+                        .append('<td>' + subjectName + '</td>')
+                        .append('<td>' + dateCreate + '</td>')
+                        .append('<td><a class="btn btn-primary" href="subjectdetail?id=' + subId + '">Update</a></td>')
+                        .append('</tr>');
+                });
+
+            }
+        });
+    }
+    getCount();
+    configPagination();
+    $('#search').click(
+        function(){
+            $('#page').val(1);
+            $('#pagination').twbsPagination('destroy');
+            $("tbody").children().remove();
+            getCount();
+            configPagination();
+        }
+    );
+
+</script>
+</body>
+</html>

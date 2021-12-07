@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class QuestionQuerySearchDTO {
+public class MultiQuerySearchDTO {
     private String title="";
     private Subject subject;
     private Integer page=1;

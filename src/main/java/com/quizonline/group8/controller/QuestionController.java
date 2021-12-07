@@ -1,7 +1,7 @@
 package com.quizonline.group8.controller;
 
 import com.quizonline.group8.common.Constants;
-import com.quizonline.group8.dto.QuestionQuerySearchDTO;
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.mapper.dto.ResponseQuestionDTO;
 import com.quizonline.group8.mapper.impl.ResponseChoiceDTOMapper;
@@ -42,15 +42,13 @@ public class QuestionController {
     private ResponseChoiceDTOMapper responseChoiceDTOMapper;
 
     @GetMapping(value="/search",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<List<Question>> getByTitle(@Valid QuestionQuerySearchDTO questionQuerySearchDTO){
-        System.out.println(questionQuerySearchDTO.toString());
-        return ResponseEntity.ok().body(questionService.searchQuestion(questionQuerySearchDTO));
+    public ResponseEntity<List<Question>> getByTitle(@Valid MultiQuerySearchDTO multiQuerySearchDTO){
+        return ResponseEntity.ok().body(questionService.searchQuestion(multiQuerySearchDTO));
     }
 
     @GetMapping(value="/count",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-    public ResponseEntity<Integer> getTotalQuestion(@Valid QuestionQuerySearchDTO questionQuerySearchDTO){
-        System.out.println(questionQuerySearchDTO.toString());
-        return ResponseEntity.ok().body(questionService.countSearchQuestion(questionQuerySearchDTO));
+    public ResponseEntity<Integer> getTotalQuestion(@Valid MultiQuerySearchDTO multiQuerySearchDTO){
+        return ResponseEntity.ok().body(questionService.countSearchQuestion(multiQuerySearchDTO));
     }
 
     @PostMapping(value="/create",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -88,16 +86,23 @@ public class QuestionController {
         try {
 
             dto.setStatus("on".equals(status)?1:0);
-            Question question = this.responseQuestionDTOMapper.toEntity(dto);
-            question.setDateUpdate(TimeUtils.getCurrentTime());
-            List<Choise> options = responseChoiceDTOMapper.toEntity(dto.getChoice());
-            for (Choise option : options) {
-                option.setQuestion(question);
-                choiceService.createAnswer(option);
-            }
-
             ResponseDTO responseDTO = new ResponseDTO();
-            responseDTO = questionService.updateQuestion(question);
+            Question question = this.responseQuestionDTOMapper.toEntity(dto);
+            Question oldQuestion = questionService.findQuestionById(question.getQuest_ID());
+            if (oldQuestion!=null){
+                question.setDateUpdate(TimeUtils.getCurrentTime());
+                question.setDateCreate(oldQuestion.getDateCreate());
+                List<Choise> options = responseChoiceDTOMapper.toEntity(dto.getChoice());
+                for (Choise option : options) {
+                    option.setQuestion(question);
+                    choiceService.createAnswer(option);
+                }
+                responseDTO = questionService.updateQuestion(question);
+            }
+            else{
+                responseDTO.setErrorCode(Constants.FAIL_CODE);
+                responseDTO.setData("Question not found");
+            }
             return  ResponseEntity.ok().body(responseDTO);
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

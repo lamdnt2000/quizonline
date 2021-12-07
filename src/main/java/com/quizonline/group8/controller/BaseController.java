@@ -1,15 +1,17 @@
 package com.quizonline.group8.controller;
 
-import com.quizonline.group8.dto.*;
-import com.quizonline.group8.mapper.dto.ResponeChoiceDTO;
-import com.quizonline.group8.mapper.dto.ResponseQuestionDTO;
-import com.quizonline.group8.mapper.impl.QuestionResponseModelMapper;
-import com.quizonline.group8.mapper.impl.ResponseChoiceDTOMapper;
-import com.quizonline.group8.mapper.impl.ResponseQuestionDTOMapper;
+import com.quizonline.group8.dto.LoginDTO;
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
+import com.quizonline.group8.dto.RegisterDTO;
+import com.quizonline.group8.dto.QuerySearchDTO;
+import com.quizonline.group8.mapper.dto.*;
+import com.quizonline.group8.mapper.impl.*;
 import com.quizonline.group8.model.Question;
+import com.quizonline.group8.model.QuizCategory;
 import com.quizonline.group8.model.Subject;
-import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.QuestionService;
+import com.quizonline.group8.service.QuizCategoryService;
+import com.quizonline.group8.service.SubjectService;
 import com.quizonline.group8.utils.CookieUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -24,23 +26,27 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller()
 public class BaseController {
-    @Autowired
-    private SubjectRepository subjectRepository;
     @Autowired
     private QuestionResponseModelMapper questionResponseModelMapper;
     @Autowired
     private QuestionService questionService;
     @Autowired
     private ResponseQuestionDTOMapper responseQuestionDTOMapper;
-
+    @Autowired
+    private SubjectService subjectService;
     @Autowired
     private ResponseChoiceDTOMapper responseChoiceDTOMapper;
-
-
+    @Autowired
+    private SubjectDTOMapper subjectDTOMapper;
+    @Autowired
+    private QuizCategoryService quizCategoryService;
+    @Autowired
+    private QuizCategoryMapper quizCategoryMapper;
     @RequestMapping("/")
     public String index(Authentication authentication){
 
@@ -90,7 +96,7 @@ public class BaseController {
 
     @GetMapping("/history")
     public ModelAndView getHistory(Model model){
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjects = subjectService.findAll();
         model.addAttribute("subjects",subjects);
         return new ModelAndView("history");
     }
@@ -112,7 +118,7 @@ public class BaseController {
     @GetMapping("/admin/createquestion")
     public ModelAndView getCreateQuestionPage(Model model){
         ResponseQuestionDTO question = new ResponseQuestionDTO();
-        List<Subject> subjects = subjectRepository.findAll();
+        List<Subject> subjects = subjectService.findAll();
         List<ResponeChoiceDTO> choices = new ArrayList<>();
         for (int i=0;i<4;i++){
             choices.add(new ResponeChoiceDTO());
@@ -123,16 +129,27 @@ public class BaseController {
         return new ModelAndView("admin/createquestion");
     }
 
-    @GetMapping("/admin/createexam")
-    public ModelAndView getCreateExamPage(Model model){
-        List<Subject> subjects = subjectRepository.findAll();
+    @GetMapping("/admin/createquiz")
+    public ModelAndView getCreateQuizPage(Model model){
+        QuizCategoryDTO quizDTO = new QuizCategoryDTO();
+        List<SubjectDTO> subjects = subjectService.findAllSubject();
         model.addAttribute("subjects",subjects);
-        return new ModelAndView("admin/createexam");
+        model.addAttribute("quiz",quizDTO);
+        return new ModelAndView("admin/createquiz");
     }
 
     @GetMapping("/admin/createsubject")
     public ModelAndView getCreateSubjectPage(Model model){
+        SubjectDTO subject = new SubjectDTO();
+        model.addAttribute("subject",subject);
         return new ModelAndView("admin/createsubject");
+    }
+
+    @GetMapping("/admin/subject")
+    public ModelAndView getSubjectPage(Model model){
+        QuerySearchDTO search = new QuerySearchDTO();
+        model.addAttribute("search",search);
+        return new ModelAndView("admin/subject");
     }
 
     @GetMapping("/admin/")
@@ -142,23 +159,59 @@ public class BaseController {
 
     @GetMapping("/admin/question")
     public ModelAndView getQuestionPage(Model model){
-        QuestionQuerySearchDTO questionQuerySearchDTO = new QuestionQuerySearchDTO();
-        List<Subject> subjects = subjectRepository.findAll();
+        MultiQuerySearchDTO multiQuerySearchDTO = new MultiQuerySearchDTO();
+        List<Subject> subjects = subjectService.findAll();
         model.addAttribute("subjects",subjects);
-        model.addAttribute("search",questionQuerySearchDTO);
+        model.addAttribute("search", multiQuerySearchDTO);
         return new ModelAndView("admin/question");
+    }
+    @GetMapping("/admin/quiz")
+    public ModelAndView getQuizPage(Model model){
+        MultiQuerySearchDTO multiQuerySearchDTO = new MultiQuerySearchDTO();
+        List<Subject> subjects = subjectService.findAll();
+        model.addAttribute("subjects",subjects);
+        model.addAttribute("search", multiQuerySearchDTO);
+        return new ModelAndView("admin/quiz");
     }
 
     @GetMapping("/admin/questiondetail")
     public ModelAndView getUpdateQuestionPage(Model model,@RequestParam(name="id") Optional<Long> questId){
         Question question = questionService.findQuestionById(questId.get());
-        ResponseQuestionDTO dto = this.responseQuestionDTOMapper.toDTO(question);
-        dto.setIsDelete(dto.getStatus()==1?true:false);
-        List<Subject> subjects = subjectRepository.findAll();
-        model.addAttribute("question",dto);
+        if (Objects.nonNull(question)) {
+            ResponseQuestionDTO dto = this.responseQuestionDTOMapper.toDTO(question);
+            dto.setIsDelete(dto.getStatus() == 1 ? true : false);
+            List<Subject> subjects = subjectService.findAll();
+            model.addAttribute("question", dto);
+            model.addAttribute("subjects", subjects);
+            model.addAttribute("lastselected", dto.getSubject().getSubject_Id());
+            return new ModelAndView("admin/questiondetail");
+        }
+        else{
+            return getQuestionPage(model);
+        }
+    }
+
+    @GetMapping("/admin/subjectdetail")
+    public ModelAndView getUpdateSubjectPage(Model model,@RequestParam(name="id") Optional<Long> questId){
+        Subject subject = subjectService.getSubById(questId.get());
+        if (Objects.nonNull(subject)) {
+            SubjectDTO dto = this.subjectDTOMapper.toDTO(subject);
+            model.addAttribute("subject",dto);
+            return new ModelAndView("admin/subjectdetail");
+        }
+        else{
+            return getSubjectPage(model);
+        }
+    }
+
+    @GetMapping("/admin/quizdetail")
+    public ModelAndView getQuizDetailsPage(Model model,@RequestParam(name="id") Optional<Long> quizId){
+        QuizCategory quizCategory = quizCategoryService.findQuizById(quizId.get());
+        QuizCategoryDTO quizCategoryDTO = quizCategoryMapper.toDTO(quizCategory);
+        List<SubjectDTO> subjects = subjectService.findAllSubject();
         model.addAttribute("subjects",subjects);
-        model.addAttribute("lastselected",dto.getSubject().getSubject_Id());
-        return new ModelAndView("admin/questiondetail");
+        model.addAttribute("quiz",quizCategoryDTO);
+        return new ModelAndView("admin/quizdetail");
     }
 
 

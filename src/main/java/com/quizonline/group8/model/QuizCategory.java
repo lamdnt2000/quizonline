@@ -1,5 +1,6 @@
 package com.quizonline.group8.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class QuizCategory implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "subject_id")
     private Subject subject;
-
+    @JsonIgnore
     @OneToMany(mappedBy = "quizcategory")
     private Collection<Quiz> quizzes;
 

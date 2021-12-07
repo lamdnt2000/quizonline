@@ -1,12 +1,11 @@
 package com.quizonline.group8.service.impl;
 
 import com.quizonline.group8.common.Constants;
-import com.quizonline.group8.dto.QuestionQuerySearchDTO;
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.mapper.impl.QuestionDTOMapper;
 import com.quizonline.group8.model.Question;
 import com.quizonline.group8.model.Subject;
-import com.quizonline.group8.repository.QuestionRepo;
 import com.quizonline.group8.repository.QuestionRepository;
 import com.quizonline.group8.repository.SubjectRepository;
 import com.quizonline.group8.service.QuestionService;
@@ -19,8 +18,6 @@ import java.util.List;
 
 @Service
 public class QuestionServiceImpl implements QuestionService {
-    @Autowired
-    private QuestionRepo questionRepo;
     @Autowired
     private ChoiceServiceImpl choiceService;
     @Autowired
@@ -44,36 +41,36 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public List<Question> searchQuestion(QuestionQuerySearchDTO questionQuerySearchDTO) {
-        if (questionQuerySearchDTO.getSubject()==null){
+    public List<Question> searchQuestion(MultiQuerySearchDTO multiQuerySearchDTO) {
+        if (multiQuerySearchDTO.getSubject()==null){
             Subject subject = subjectRepository.findById(1L).get();
-            questionQuerySearchDTO.setSubject(subject);
+            multiQuerySearchDTO.setSubject(subject);
         }
-        Pageable pageable = PageRequest.of(questionQuerySearchDTO.getPage()-1, Constants.QUESTION_PER_PAGE);
-        return this.questionRepository.findByQuestionTitleContainingAndSubjectAndStatus(questionQuerySearchDTO.getTitle(),questionQuerySearchDTO.getSubject(),questionQuerySearchDTO.getStatus(),pageable);
+        Pageable pageable = PageRequest.of(multiQuerySearchDTO.getPage()-1, Constants.QUESTION_PER_PAGE);
+        return this.questionRepository.findByQuestionTitleContainingAndSubjectAndStatus(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(), multiQuerySearchDTO.getStatus(),pageable);
     }
 
     @Override
-    public Integer countSearchQuestion(QuestionQuerySearchDTO questionQuerySearchDTO) {
-        if (questionQuerySearchDTO.getSubject()==null){
+    public Integer countSearchQuestion(MultiQuerySearchDTO multiQuerySearchDTO) {
+        if (multiQuerySearchDTO.getSubject()==null){
             Subject subject = subjectRepository.findById(1L).get();
-            questionQuerySearchDTO.setSubject(subject);
+            multiQuerySearchDTO.setSubject(subject);
         }
-        return this.questionRepository.countByQuestionTitleContainingAndSubjectAndStatus(questionQuerySearchDTO.getTitle(),questionQuerySearchDTO.getSubject(),questionQuerySearchDTO.getStatus());
+        return this.questionRepository.countByQuestionTitleContainingAndSubjectAndStatus(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(), multiQuerySearchDTO.getStatus());
     }
 
     @Override
     public Question createNewQuestion(Question question) {
-        return questionRepo.save(question);
+        return questionRepository.save(question);
     }
 
     @Override
     public ResponseDTO updateQuestion(Question question) {
         ResponseDTO responseDTO = new ResponseDTO();
-        if (questionRepo.findById(question.getQuest_ID()).get()==null){
+        if (questionRepository.findById(question.getQuest_ID()).get()==null){
             throw new IllegalStateException("Cant not found this question");
         }
-        responseDTO.setData(questionRepo.save(question));
+        responseDTO.setData(questionRepository.save(question));
         responseDTO.setSuccessCode(Constants.SUCCESS_CODE);
         return responseDTO;
     }
