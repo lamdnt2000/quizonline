@@ -1,5 +1,6 @@
 package com.quizonline.group8.authority;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.quizonline.group8.model.Member;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,15 @@ public class MemberDetails implements UserDetails {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(member.getRoles().getRoleName());
         return Arrays.asList(simpleGrantedAuthority);
     }
-
+    @JsonIgnore
     @Override
     public String getPassword() {
         return member.getPassword();
     }
-
+    @JsonIgnore
+    public Member getMember(){
+        return member;
+    }
     @Override
     public String getUsername() {
         return member.getEmail();
@@ -49,5 +53,9 @@ public class MemberDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getFullName() {
+        return member.getFullname();
     }
 }

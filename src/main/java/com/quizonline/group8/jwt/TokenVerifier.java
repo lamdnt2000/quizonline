@@ -1,12 +1,15 @@
 package com.quizonline.group8.jwt;
 
-import ch.qos.logback.classic.spi.EventArgUtil;
+import com.quizonline.group8.authority.MemberDetails;
+import com.quizonline.group8.authority.MemberServiceApp;
+import com.quizonline.group8.utils.CookieUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.AllArgsConstructor;
 import lombok.var;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,27 +32,40 @@ import java.util.stream.Collectors;
 public class TokenVerifier extends OncePerRequestFilter {
     private SecretKey secretKey;
     private JwtConfig jwtConfig;
+    @Autowired
+    private MemberServiceApp memberServiceApp;
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(jwtConfig.getAuthorizationHeader());
-        if(authorizationHeader == null || authorizationHeader.equals("") || !authorizationHeader.startsWith("Bearer")){
+
+        String token = CookieUtil.getValue(request,"token");
+        if (token == null){
             filterChain.doFilter(request, response);
             return ;
         }
-        String token = authorizationHeader.replace("Bearer", "");
+
         try {
+
             Jws<Claims> claimsJws = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
             Claims body = claimsJws.getBody();
-            String userName = body.getSubject();
+            MemberDetails memberDetails = (MemberDetails) memberServiceApp.loadUserByUsername(body.getSubject());
+
             var authorities = (List<Map<String,String>>)body.get("authorities");
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream().map(m->new SimpleGrantedAuthority("ROLE_"+m.get("authority"))).collect(Collectors.toSet());//filler collect list map thì dùng stream
-            Authentication authentication = new UsernamePasswordAuthenticationToken(userName,null,simpleGrantedAuthorities);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(memberDetails,null,simpleGrantedAuthorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }catch(JwtException e)
         {
+            CookieUtil.clear(response,"token");
             throw new IllegalStateException("Token cannot be trust");
         }
-        filterChain.doFilter(request, response);
+        finally {
+            filterChain.doFilter(request, response);
+        }
     }
+
+
+
 }

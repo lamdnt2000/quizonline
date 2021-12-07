@@ -9,6 +9,6 @@ import java.io.Serializable;
 @Getter @Setter
 public class ChoiceResponseModel implements Serializable {
 
-    private Integer answerNumber;
+    private Integer answernumber;
     private String answer;
 }

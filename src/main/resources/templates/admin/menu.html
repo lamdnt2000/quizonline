@@ -3,21 +3,31 @@
 <div id="layoutSidenav_nav" th:fragment="menuAdmin">
     
     <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-        <div class="sb-sidenav-menu">
+        <div class="sb-sidenav-menu" sec:authorize="isAuthenticated()">
             <div class="nav">
-                <div class="sb-sidenav-menu-heading"><font color="red">Welcome,  </font> </div>
+                <div class="sb-sidenav-menu-heading" th:text ="${#authentication.getPrincipal().getFullName()}"><font color="red">Welcome,  </font> </div>
 
-                <div class="sb-sidenav-menu-heading">Manage Exam</div>
+                <div class="sb-sidenav-menu-heading">Manage Subject</div>
                 <a class="nav-link" th:href="@{createsubject}">
                     <div class="sb-nav-link-icon"></div>
                     Create Subject
                 </a>
-                 <a class="nav-link" th:href="@{createexam}">
+                 <a class="nav-link" th:href="@{subject}">
                     <div class="sb-nav-link-icon"></div>
-                    Create Exam
+                    Show Subject
                 </a>
 
-                <div class="sb-sidenav-menu-heading">Manage Quiz</div>
+                <div class="sb-sidenav-menu-heading">Quiz Category</div>
+                <a class="nav-link" th:href="@{createquiz}">
+                    <div class="sb-nav-link-icon"></div>
+                    Create quiz
+                </a>
+                <a class="nav-link" th:href="@{quiz}">
+                    <div class="sb-nav-link-icon"></div>
+                    Show Quiz
+                </a>
+
+                <div class="sb-sidenav-menu-heading">Manage Question</div>
                 <a class="nav-link"th:href="@{createquestion}">
                     <div class="sb-nav-link-icon"></div>
                     Create Question

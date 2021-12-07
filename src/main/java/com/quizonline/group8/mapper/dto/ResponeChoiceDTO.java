@@ -6,12 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
-
-@NoArgsConstructor
 @AllArgsConstructor
-@Getter @Setter
-public class ChoiceDTO implements Serializable {
-
+@NoArgsConstructor
+@Getter
+@Setter
+public class ResponeChoiceDTO implements Serializable {
+    private Long choice_ID;
     private Integer answernumber;
     private String answer;
 }

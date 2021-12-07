@@ -26,7 +26,6 @@ public class Question implements Serializable {
     @JsonIgnore
     private String userUpdate;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "question")
     private Collection<Choise> choice;
 

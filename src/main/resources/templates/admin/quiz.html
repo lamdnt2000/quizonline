@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - Question</title>
+        <title>Dashboard - Quiz Category</title>
         <link th:href="@{css/styles.css}" rel="stylesheet" />
         <script th:src="@{js/all.min.js}" crossorigin="anonymous"></script>
     </head>
@@ -21,7 +21,7 @@
                     <div class="container-fluid">
                         <h1 class="mt-4">Dashboard</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Question/ Show Question</li>
+                            <li class="breadcrumb-item active">Quiz/ Show Quiz</li>
                         </ol>
                         <div id="message"></div>
                         <div class="row" >
@@ -35,39 +35,34 @@
                                     <br>
                                     <div class="row">
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <select class="custom-select" th:field="*{subject}">
                                                 <option th:each="sub: ${subjects}" th:value="${sub.subject_Id}" th:text="${sub.subjectName}"></option>
                                             </select>
                                         </div>
-                                        <div class="col-md-3">
-                                            <select class="custom-select" name="status" id="status" th:field="*{status}">
-                                                <option value="1">Active</option>
-                                                <option value="0">Disable</option>
-                                                </select>                                       
-                                            </div>
+                                        <div class="col-md-4">
                                             <div class="col-md-3 justify-content-end">
                                                 <button type="button" id="search" class="btn btn-primary">Search</button>
                                             </div>
 
                                             <br>
                                         </div>
-
+                                    </div>
                                         <div class="row"></br></div>
                                         <div class="row">
 
                                             <div class="table-responsive">
 
 
-                                                <table id="mytable" class="table table-bordred table-striped">
+                                                <table id="quiztable" class="table table-bordred table-striped">
 
                                                     <thead>
 
                                                     <th><input type="checkbox" id="checkall" /></th>
-                                                    <th>Title</th>
+                                                    <th>ExamName</th>
                                                     <th>Subject</th>
-                                                    <th>Correct Answer</th>
-                                                    <th>Date Create</th>
+                                                    <th>Numquest</th>
+                                                    <th>Time Do</th>
                                                     <th>Action</th>
                                                     </thead>
                                                     <tbody id="mainBody">
@@ -132,7 +127,7 @@
             function getCount() {
                 $.ajax({
                     type: "GET",
-                    url: "../api/question/count",
+                    url: "../api/quizcategory/count",
                     headers: {"Content-type": "application/x-www-form-urlencoded"},
                     data: $('form').serializeArray(),
                     async: false,
@@ -165,31 +160,32 @@
                     });
                 } else {
                     $("tbody").children().remove();
-                    $("tbody").append("<p>No question found</p>");
+                    $("tbody").append("<p>No quiz category found</p>");
                 }
             }
             function loadAjax(page) {
 
                 $.ajax({
                     type: "GET",
-                    url: "../api/question/search",
+                    url: "../api/quizcategory/search",
                     headers:{"Content-type":"application/x-www-form-urlencoded"},
                     data: $('form').serializeArray(),
                     async: true,
                     success: function (data) {
                         data.forEach(function (item) {
-                            var questionId = item.quest_ID;
-                            var questionTitle = item.questionTitle;
+                            var examId = item.exam_id;
+                            var examName = item.examName;
                             var subjectName = item.subject.subjectName;
-                            var correctAnswer = item.correctAnswer;
-                            var dateCreate = moment(item.dateCreate).format('DD/MM/YYYY-h:mm:ss a');
+                            var examTime = item.examTime;
+                            var numQuest = item.numQuest;
+                            var dateCreate = moment(item.timeCreate).format('DD/MM/YYYY-h:mm:ss a');
                             $('tbody').append('<tr>')
-                                    .append('<td><input type="checkbox" class="checkthis" name="questionId" value="' + questionId + '" /></td>')
-                                    .append('<td>' + questionTitle + '</td>')
+                                    .append('<td><input type="checkbox" class="checkthis" name="quizCategoryId" value="' + examId + '" /></td>')
+                                    .append('<td>' + examName + '</td>')
                                     .append('<td>' + subjectName + '</td>')
-                                    .append('<td>' + correctAnswer + '</td>')
-                                    .append('<td>' + dateCreate + '</td>')
-                                    .append('<td><a class="btn btn-primary" href="questiondetail?id=' + questionId + '">Update</a></td>')
+                                    .append('<td>' + numQuest + '</td>')
+                                    .append('<td>' + examTime + '</td>')
+                                    .append('<td><a class="btn btn-primary" href="quizdetail?id=' + examId + '">Update</a></td>')
                                     .append('</tr>');
                         });
 
@@ -207,27 +203,7 @@
                     configPagination();
                 }
             );
-            $('#deleteBtn').click(function () {
-                var questionId = [];
-                $("#mytable td input:checked").each(function ()
-                {
-                    questionId.push($(this).val());
-                });
 
-                /*$.ajax({
-                    type: "POST",
-                    url: "DeleteQuestionProcess",
-                    cache: false,
-                    data: {questionId: questionId,
-                        subjectId: subjectIdParam},
-                    success: function (data) {
-                        alert(data.message);
-                        window.location.reload();
-
-                    }
-                });
-                setTimeout(location.reload(), 3000);*/
-            });
         </script>
     </body>
 </html>

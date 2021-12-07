@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en" >
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Dashboard - Quiz Detail</title>
+        <link th:href="@{css/styles.css}" rel="stylesheet" />
+        <script th:src="@{js/all.min.js}" crossorigin="anonymous"></script>
+        <style>
+            #productForm label.error{
+                display: block;
+                width: 100%;
+                color:red;
+            }
+
+        </style>
+    </head>
+    <body>
+    <div th:replace="admin/header::headerAdmin"/>
+        <div id="layoutSidenav">
+            <div th:replace="admin/menu::menuAdmin"/>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid">
+                        <h1 class="mt-4">Dashboard</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Quiz/ Show Detail</li>
+                        </ol>
+
+                        <div class="row">
+                            <div class="col-xl-10">
+
+
+                                <form th:method="PUT" th:object="${quiz}" id="quizForm" >
+
+                                    <small class="text-dark">Exam Name</small><br>
+                                    <input id="txtExamName" type="text" th:field="*{examName}" placeholder="Quiz Name" class="form-control form-control-sm" value="">
+                                    <input id="quizId" type="hidden"th:field="*{exam_id}"/>
+                                    <small class="text-dark">Subject</small>
+                                    <select class="custom-select" id="subject" th:field="*{subject}">
+                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${quiz.subject.subject_Id eq subject.subject_Id}"></option>
+                                    </select>
+                                    <small class="text-danger">Total Question: </small>
+                                    <small class="text-danger" id="totalQuestion"></small>
+                                    <br>
+                                    <small class="text-dark">Time do Exam</small>
+                                    <input id="timeDoExam" type="number" th:field="*{examTime}" placeholder="Time do Quiz" class="form-control form-control-sm" value="" step="1">
+
+                                    <small class="text-dark">Question per Exam</small>
+                                    <input id="numQuest" type="number" th:field="*{numQuest}" placeholder="Question per Quiz" class="form-control form-control-sm" value="" step="1">
+
+                                    <br>
+
+                                    <button id="submit" type="submit" class="btn btn-primary" >Create Exam</button>
+
+                                </form>
+                                <br>
+                                <div id="message"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </main>
+                <div th:replace="admin/footer::footerAdmin"/>
+            </div>
+        </div>
+    <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
+    <script th:src="@{js/scripts.js}"></script>
+    <script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+    <script th:src="@{../js/jquery.validate.min.js}"></script>
+    <script th:src="@{../js/additional-methods.min.js}"></script>
+        <script type="text/javascript">
+            getTotalQuestion();
+            $('#subject').change(function () {
+                getTotalQuestion();
+            });
+            function getTotalQuestion() {
+                $.ajax({
+                    type: "GET",
+                    url: "../api/question/count",
+                    headers:{"Content-type":"application/x-www-form-urlencoded"},
+                    data: {
+                        "title":"",
+                        "subject":$('#subject').val()
+                    },
+                    async: true,
+                    success: function (data) {
+                        $('#totalQuestion').html(data);
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                $('#submit').click(function () {
+                    var id = $('#subject option:selected').val();
+                    var text = $('#subject option:selected').text();
+                    var subject ={"subject_Id":id,"subjectName":text};
+                    var data=$('form').serializeArray().reduce(function(data,x){data[x.name] = x.value;return data},{});
+                    data["subject"]=subject;
+                    $.ajax({
+                        type: "PUT",
+                        url: "../api/quizcategory/update",
+                        headers:{"Content-Type": "application/json"},
+                        data: JSON.stringify(data),
+                        success: function (data) {
+                            if (data.successCode!=null){
+                                window.location.href="quiz";
+                            }
+                            else{
+                                alert("Try again");
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            $().ready(function () {
+                $('#questionForm').validate({
+                    rules: {
+                        txtExamName: {
+                            required: true,
+                            rangelength: [5, 50]
+                        },
+                        subjectId: {
+                            required: true,
+
+                        },
+                        timeDoExam: {
+                            required: true,
+                            range: [1, 90]
+
+                        },
+                        numQuest: {
+                            required: true,
+                            min: 1,
+                            max: function () {
+                                return parseInt($('#totalQuestion').html());
+                            }
+                        }
+                    }
+                });
+
+            }
+            );
+        </script>
+
+    </body>
+</html>

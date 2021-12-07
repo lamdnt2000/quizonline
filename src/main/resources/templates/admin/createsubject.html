@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="https://thymeleaf.org/thymeleaf-extras-springsecurity5" lang="en" >
     <head>
@@ -6,14 +7,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <title>Dashboard - Category</title>
+        <title>Dashboard - Create Question</title>
         <link th:href="@{css/styles.css}" rel="stylesheet" />
-        <link th:href="@{css/dataTables.bootstrap4.min.css}" rel="stylesheet" crossorigin="anonymous" />
         <script th:src="@{js/all.min.js}" crossorigin="anonymous"></script>
 
     </head>
     <body>
-    <div th:replace="admin/header::headerAdmin"/>
+        <div th:replace="admin/header::headerAdmin"/>
         <div id="layoutSidenav">
             <div th:replace="admin/menu::menuAdmin"/>
             <div id="layoutSidenav_content">
@@ -21,39 +21,24 @@
                     <div class="container-fluid">
                         <h1 class="mt-4">Dashboard</h1>
                         <ol class="breadcrumb mb-4">
-                            <li class="breadcrumb-item active">Subject / Create Subject </li>
+                            <li class="breadcrumb-item active">Subject/Create Subject</li>
                         </ol>
 
                         <div class="row">
-                            <div class="col-xl-4">
+                            <div class="col-xl-10">
 
-                                <form action="CreateSubjectProcess" method="POST" id="formSubject">
-                                    <small class="text-dark">Subject Id</small><br>
-                                    <input type="text" name="txtSubjectId" placeholder="Subject Id" class="form-control form-control-sm" value="">
 
+                                <form th:method="POST" th:object="${subject}" id="subjectForm" >
                                     <small class="text-dark">Subject Name</small><br>
-                                    <textarea class="form-control" name="txtSubjectName" placeholder="Description" rows="3" ></textarea><br>
-                                    <button type="submit" class="btn btn-primary">Create</button>
+                                    <input id="txtSubjectName" type="text" th:field="*{subjectName}" placeholder="Question title" class="form-control form-control-sm" />
+                                    <br>
+                                    <button id="submit" type="submit" class="btn btn-primary">Create Subject</button>
 
                                 </form>
                                 <br>
-                                <div id="message"></div>
+           
                             </div>
-                            <div class="col-xl-8">
-                                <table class="table" >
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col">Id</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Date Create</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
 
-                                    </tbody>
-                                </table>
-                            </div>
                         </div>
 
                     </div>
@@ -61,61 +46,41 @@
                 <div th:replace="admin/footer::footerAdmin"/>
             </div>
         </div>
+
         <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
         <script th:src="@{js/scripts.js}"></script>
-        <script th:src="@{js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
-        <script th:src="@{js/jquery.validate.min.js}"></script>
-        <script th:src="@{js/additional-methods.min.js}"></script>
+        <script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{../js/jquery.validate.min.js}"></script>
+        <script th:src="@{../js/additional-methods.min.js}"></script>
+
         <script type="text/javascript">
-            $.ajax({
-                type: "GET",
-                url: "${applicationScope.PATHAPI}/ShowAllSubject",
-                async: true,
-                success: function (data) {
-                    var count = 0;
-                    data.forEach(function (item) {
-                        count++;
-
-                        var subjectId = item.id;
-                        var subjectName = item.name;
-                        var dateCreate = item.dateCreate;
-                        $('tbody').append('<tr>')
-                                .append('<th scope="row">' + count + '</th>')
-                                .append('<td>' + subjectId + '</td>')
-                                .append('<td>' + subjectName + '</td>')
-                                .append('<td>' + dateCreate + '</td>')
-                                .append('</tr>')
-                                ;
-                    });
-
-                }
-            })
-            $().ready((function () {
-                $('#formSubject').validate({
+            $().ready(function () {
+                $('#subjectForm').validate({
                     rules: {
-                        txtSubjectId: {
-                            required: true,
-                            rangelength: [3, 10]
-                        },
                         txtSubjectName: {
                             required: true,
-                            rangelength: [5, 50]
-                        },
+                            rangelength: [5, 20]
+                        }
                     },
                     submitHandler: function (form) {
-                        $.ajax({
-                            type: form.method,
-                            url: form.action,
-                            data: $(form).serialize(),
-                            success: function (data) {
-                                alert(data.message);
-                                window.location.reload();
-                            }
-                        });
-                    }
-                })
-            })
-                    )
+                            $.ajax({
+                                type: form.method,
+                                url: "../api/subject/create",
+                                data: $(form).serializeArray(),
+                                success: function (data) {
+                                    if (data.successCode!=null){
+                                        window.location.href="subject"
+                                    }
+                                    else{
+                                        alert("Error");
+                                    }
+                                }
+                            });
+                        }
+                });
+
+            }
+            );
         </script>
     </body>
 </html>

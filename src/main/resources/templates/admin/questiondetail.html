@@ -35,41 +35,35 @@
                             <div class="col-xl-10">
 
 
-                                <form action="" method="GET" id="questionForm" >
+                                <form method="GET" id="questionForm" th:object="${question}">
                                     <small class="text-dark">Question Title</small><br>
-                                    <input id="txtQuestionTitle" type="text" name="txtQuestionTitle" placeholder="Question title" class="form-control form-control-sm" value="${questionResult.questionTitle}">
-                                    <input id="questId" type="hidden" name="questionId" value=""/>
+                                    <input th:field="*{questionTitle}" id="txtQuestionTitle" type="text" placeholder="Question title" class="form-control form-control-sm" >
+                                    <input id="questId" type="hidden"th:field="*{quest_ID}"/>
                                     <small class="text-dark">Subject</small>
-                                    <select class="custom-select" name="subjectId" id="subject">
+                                    <select class="custom-select" th:field="*{subject}" id="subject">
+                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${lastselected eq subject.subject_Id}"></option>
                                     </select>
 
-
                                     <small class="text-dark">Answer Option</small><br>
-                                    <c:set var="choiceResult" value="${requestScope.CHOICEDETAIL}"/>
-                                    <c:forEach var="dto" items="${choiceResult}" varStatus="counter">
-                                        <div class="row justify-content-center">
+                                    <fieldset id="correctAnswer">
+                                        <div class="row justify-content-center" th:each="option,state:*{choice}">
                                             <div class="col-md-1">
-                                                <input type="radio" name="answer"  value="${counter.count}" 
-                                                       <c:if test="${counter.count eq questionResult.correctAnswer}">
-                                                           checked="true"
-                                                       </c:if>
-                                                       />
+                                                <input type="radio" th:field="*{correctAnswer}"  th:value="${state.index+1}" /> <!--checked="true"-->
+                                                <input type="hidden" th:field="*{choice[__${state.index}__].answernumber}" th:value="${state.index+1}"/>
+                                                <input type="hidden" th:field="*{choice[__${state.index}__].choice_ID}" th:value="${option.choice_ID}"/>
                                             </div>
                                             <div class="col-md-9">
-                                                <c:set var="name" value="txtOption${counter.count}"/>
-                                                <input  type="text" name="${name}" placeholder="Answer content ${counter.count}" class="form-control form-control-sm" value="${dto.answer}">
+
+                                                <input type="text" th:field="*{choice[__${state.index}__].answer}" placeholder="Answer content " class="form-control form-control-sm"/>
                                             </div>
+                                            <br>
+                                            <br>
                                         </div>
-                                        <br>
-                                    </c:forEach>
+                                    </fieldset>
                                     <br>
 
                                     <small class="text-dark">Status</small><br>
-                                    <input type="checkbox" name="status" id="status" 
-                                           <c:if test="${questionResult.status==1}">
-                                               checked
-                                           </c:if>
-                                           />
+                                    <input type="checkbox" th:field="*{isDelete}" id="status"/>
                                     <label for="status">Active</label><br><br>
 
                                     <button id="submit" type="button" class="btn btn-primary">Update Question</button>
@@ -88,44 +82,32 @@
         </div>
     <script th:src="@{js/jquery-3.5.1.slim.min.js}" crossorigin="anonymous"></script>
     <script th:src="@{js/scripts.js}"></script>
-    <script th:src="@{js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
-    <script th:src="@{js/jquery.validate.min.js}"></script>
-    <script th:src="@{js/additional-methods.min.js}"></script>
+    <script th:src="@{../js/jquery-1.12.0.min.js}" crossorigin="anonymous"></script>
+    <script th:src="@{../js/jquery.validate.min.js}"></script>
+    <script th:src="@{../js/additional-methods.min.js}"></script>
         <script type="text/javascript">
-            $.ajax({
-                type: "GET",
-                url: "${applicationScope.PATHAPI}/ShowAllSubject",
-                async: true,
-                success: function (data) {
-
-                    data.forEach(function (item) {
-                        var subjectId = item.id;
-
-                        var checked = (subjectId === '${questionResult.subjectId}') ? "selected" : "";
-                        $('#subject').append('<option value="' + subjectId + '"' + checked + '>' + subjectId + '</option>');
-                    });
-
+            $("#status").change(function() {
+                if(this.checked) {
+                    $('[name="_isDelete"]').val("on");
+                }
+                else{
+                    $('[name="_isDelete"]').val("off");
                 }
             });
             $(document).ready(function () {
                 $('#submit').click(function () {
                     $.ajax({
-                        type: "POST",
-                        url: "${applicationScope.ADMINURI}/UpdateQuestionProcess",
-                        data: {
-                            "txtQuestionTitle": $('#txtQuestionTitle').val(),
-                            "subjectId": $('#subject :selected').val(),
-                            "answer": $('input[name="answer"]:checked').val(),
-                            "questionId": $('#questId').val(),
-                            "status": $('#status').val(),
-                            "txtOption1": $('input[name="txtOption1"]').val(),
-                            "txtOption2": $('input[name="txtOption2"]').val(),
-                            "txtOption3": $('input[name="txtOption3"]').val(),
-                            "txtOption4": $('input[name="txtOption4"]').val()
-                        },
+                        type: "PUT",
+                        url: "../api/question/update",
+                        data: $('form').serializeArray(),
                         success: function (data) {
-                            alert(data.message);
-                            window.location.reload();
+                            if (data.successCode!=null){
+                                window.location.href="question";
+                                alert("success");
+                            }
+                            else{
+                                alert("Try again");
+                            }
                         }
                     });
                 });

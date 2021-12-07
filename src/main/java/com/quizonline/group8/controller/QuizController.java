@@ -1,5 +1,7 @@
 package com.quizonline.group8.controller;
 
+import com.quizonline.group8.common.Constants;
+import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.mapper.dto.QuizDTO;
 import com.quizonline.group8.mapper.dto.QuizQuestionListDTO;
 import com.quizonline.group8.mapper.impl.QuizQuestionListResponseModelMapper;
@@ -16,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -40,29 +41,46 @@ public class QuizController {
     private QuizQuestionListService quizQuestionListService;
 
 
-   @GetMapping(value="/create")
-   public ResponseEntity<QuizResponseModel> createQuiz(@RequestParam(name="id")Optional<Long> id){
-       QuizDTO quizDTO = this.quizService.createQuiz(id.get());
-       QuizResponseModel quizResponseModel = this.quizResponseModelMapper.toResponseModel(quizDTO);
-       return ResponseEntity.ok(quizResponseModel);
+   @PostMapping(value="/create")
+   public ResponseEntity<ResponseDTO> createQuiz(@RequestParam(name="id")Optional<Long> id){
+       ResponseDTO responseDTO = new ResponseDTO();
+       try {
+           QuizDTO quizDTO = this.quizService.createQuiz(id.get());
+           responseDTO.setData(quizDTO.getQuiz_Id());
+           responseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+       }
+       catch (Exception e){
+           responseDTO.setData("Create new Quiz failed");
+           responseDTO.setSuccessCode(Constants.FAIL_CODE);
+       }
+       finally {
+           return ResponseEntity.ok(responseDTO);
+       }
+
    }
 
     @GetMapping(value="/question")
-    public ResponseEntity<List<QuizQuestionListResponseModel>> showDetails(@RequestParam(name="examId") Optional<Long> examId, @RequestParam(name="page") Optional<Integer> page){
+    public ResponseEntity<ResponseDTO> showDetails(@RequestParam(name="examId") Optional<Long> examId, @RequestParam(name="page") Optional<Integer> page){
         List<QuizQuestionListDTO> quizQuestionListDTOS = this.quizQuestionListService.findByExamId(examId.get(),page.get());
         List<QuizQuestionListResponseModel> quizQuestionListResponseModels = this.quizQuestionListResponseModelMapper.toResponseModel(quizQuestionListDTOS);
-        return ResponseEntity.ok(quizQuestionListResponseModels);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setData(quizQuestionListResponseModels);
+        responseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping(value="/quizDetail")
-    public ResponseEntity<QuizResponseModel> showQuizDetails(@RequestParam(name="id") Optional<Long> examId) throws NotFoundException {
+    public ResponseEntity<ResponseDTO> showQuizDetails(@RequestParam(name="id") Optional<Long> examId) throws NotFoundException {
         QuizDTO quizDTO = this.quizService.findQuiz(examId.get());
         QuizResponseModel quizResponseModel = this.quizResponseModelMapper.toResponseModel(quizDTO);
-        return ResponseEntity.ok(quizResponseModel);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setData(quizResponseModel);
+        responseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @PostMapping(value="/submitQuiz")
-    public ResponseEntity<QuizResponseModel> submitQuizResult(@RequestBody MultiValueMap<String, String> formData, HttpServletRequest request) throws NotFoundException {
+    public ResponseEntity<ResponseDTO> submitQuizResult(@RequestBody MultiValueMap<String, String> formData) throws NotFoundException {
         Long id = stringToNumber(formData.get("id"),Long::parseLong);
         QuizDTO quiz = this.quizService.findQuiz(id);
         Integer totalCorrect = 0;
@@ -84,8 +102,11 @@ public class QuizController {
             this.quizService.updateQuiz(quiz);
 
         }
-        QuizResponseModel model = this.quizResponseModelMapper.toResponseModel(quiz);
-        return ResponseEntity.ok(model);
+        QuizResponseModel quizResponseModel = this.quizResponseModelMapper.toResponseModel(quiz);
+        ResponseDTO responseDTO = new ResponseDTO();
+        responseDTO.setData(quizResponseModel);
+        responseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+        return ResponseEntity.ok(responseDTO);
     }
 
     @GetMapping("/history")

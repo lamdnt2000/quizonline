@@ -73,7 +73,7 @@
                             var timeDoExam  = item.examTime;
                             var numQuest = item.numQuest;
                             $('#showSubject').append('<div class="card-body">\n\
-                            <h5 class="card-title"><a href="CreateQuizProcess?examId=' + id +'">' + name + '</a></h5>\n\
+                            <h5 class="card-title"><a href="#" onclick="createQuiz('+id+')">' + name + '</a></h5>\n\
                                 <div class="row">\n\
                                         <div class="col-md-2">\n\
                                             <p class="font-weight-bold text-success">Date create:</p>\n\
@@ -101,7 +101,24 @@
                         $('#showSubject').append('<p>No quiz avalible yet</p>');
                     }
                 }});
-
+            function createQuiz(id){
+                $.ajax({
+                    type: "POST",
+                    url: "api/quiz/create",
+                    data: {
+                        id: id
+                    },
+                    async: false,
+                    success: function (data) {
+                            if (data.successCode!=null){
+                                window.location.href="doquiz?id="+data.data
+                            }
+                            else{
+                                alert(data.data);
+                            }
+                    }
+                });
+            }
         </script>
 
 
