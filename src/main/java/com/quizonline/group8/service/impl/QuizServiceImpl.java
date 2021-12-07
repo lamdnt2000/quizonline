@@ -1,12 +1,10 @@
 package com.quizonline.group8.service.impl;
 
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.mapper.dto.QuizDTO;
 import com.quizonline.group8.mapper.impl.QuizDTOMapper;
 import com.quizonline.group8.model.*;
-import com.quizonline.group8.repository.MemberRepository;
-import com.quizonline.group8.repository.QuestionRepository;
-import com.quizonline.group8.repository.QuizCategoryRepository;
-import com.quizonline.group8.repository.QuizRepository;
+import com.quizonline.group8.repository.*;
 import com.quizonline.group8.service.QuizService;
 import com.quizonline.group8.utils.UserSecurityUtil;
 import javassist.NotFoundException;
@@ -22,6 +20,8 @@ import java.util.*;
 public class QuizServiceImpl implements QuizService {
     @Autowired
     private QuizRepository quizRepository;
+    @Autowired
+    private SubjectRepository subjectRepository;
     @Autowired
     private QuestionRepository questionRepository;
     @Autowired
@@ -94,6 +94,16 @@ public class QuizServiceImpl implements QuizService {
         List<Quiz> quizzes = this.quizRepository.findByMember(member);
         List<QuizDTO> quizDTOS = this.quizDTOMapper.toDTO(quizzes);
         return quizDTOS;
+    }
+
+    @Override
+    public List<QuizDTO> searchHistory(MultiQuerySearchDTO multiQuerySearchDTO) {
+        Member member = UserSecurityUtil.getCurrentUser();
+        if (multiQuerySearchDTO.getSubject()==null){
+            multiQuerySearchDTO.setSubject(this.subjectRepository.findById(1L).get());
+        }
+        List<Quiz> quizzes = this.quizRepository.searchQuiz(member.getEmail(),1,multiQuerySearchDTO.getTitle(),multiQuerySearchDTO.getSubject().getSubject_Id());
+         return this.quizDTOMapper.toDTO(quizzes);
     }
 
 

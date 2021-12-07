@@ -32,17 +32,16 @@
             <br>
             <div class="row">
                 <div class="col-md-12">
-                    <form action="" id="searchForm" >
+                    <form id="searchForm" th:object="${search}" >
                         <div class="input-group">
                             <div class="col-md-7">
                                 <small class="text-muted">Name</small>
-                                <input id="txtSearchName" name="txtSearchName" class="form-control" placeholder="Name of quiz" value="">
+                                <input id="txtSearchName" th:field="*{title}" class="form-control" placeholder="Name of quiz" value="">
                                 <br>
                             </div>
                             <div class="col-md-5 justify-content-end">
                                 <small class="text-dark">Subject</small>
-                                <select class="custom-select" id="subject" >
-                                    <option value="0">All</option>
+                                <select class="custom-select" id="subject" th:field="*{subject}">
                                     <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}"></option>
                                 </select>
 
@@ -51,8 +50,7 @@
                         <br>
                         <div class="row justify-content-center ">
                             <div clas="col-md-4">
-                                <input class="btn btn-primary" type="submit" value="Search History">
-
+                                <button class="btn btn-primary" type="button" value="Search History" id="search">Search</button>
                             </div>
                         </div>
                     </form>
@@ -60,8 +58,6 @@
 
                     <div class="card text-white bg-dark" id="showHistory">
                         <div class="card-header" >History</div>
-
-
                     </div>
                 </div>
             </div>
@@ -81,7 +77,55 @@
         <script th:src="@{js/jquery-1.12.0.min.js}"></script>
         <script th:src="@{js/moment.js}"></script>
         <script type="text/javascript">
-
+            $('#search').click(
+                function(){
+                    $('#showHistory').children().remove();
+                    $.ajax({
+                        type: "GET",
+                        url: "api/quiz/search",
+                        headers:{"Content-type":"application/x-www-form-urlencoded"},
+                        data:$('form').serializeArray(),
+                        async: false,
+                        success: function (data) {
+                            if (data != null) {
+                                data.forEach(function (item) {
+                                    var id = item.quiz_Id;
+                                    var total = item.total;
+                                    var timeDo = moment(item.dateCreate).format('DD/MM/YYYY-h:mm:ss a');
+                                    var quizcategory = item.quizcategory;
+                                    var numQuest = quizcategory.numQuest;
+                                    var subject = quizcategory.subject;
+                                    var status = (total/numQuest >= 0.4) ? '<p class="font-italic text-success">PASSED</p>' : '<p class="font-italic text-danger">NOT PASSED</p>';
+                                    $('#showHistory').append('<div class="card-body">\n\
+                            <a class="card-title" href="#"><p class="font-weight-bold text-primary">' + subject.subjectName + '/' + quizcategory.examName + '</p></a>\n\
+                                <div class="row">\n\
+                                        <div class="col-md-2">\n\
+                                            <p class="font-weight-bold text-success">Date Take:</p>\n\
+                                        </div>\n\
+                                         <div class="col-md-3">\n\
+                                            <p class="font-italic text-light">' + timeDo + '</p>\n\
+                                        </div>\n\
+                                        <div class="col-md-1">\n\
+                                            <p class="font-weight-bold text-danger">Score:</p>\n\
+                                        </div>\n\
+                                         <div class="col-md-1">\n\
+                                            <p class="font-italic text-light">' + total + '/'+numQuest+'</p>\n\
+                                        </div>\n\
+                                        <div class="col-md-2">\n\
+                                            <p class="font-weight-bold text-primary">Status:</p>\n\
+                                        </div>\n\
+                                         <div class="col-md-3">' + status + '</div>\n\
+                                </div>\n\
+                            <hr></div>');
+                                });
+                            }
+                            else{
+                                $('#showHistory').append('<p>No quiz found</p>');
+                            }
+                        }
+                    });
+                }
+            );
 
 
             $.ajax({
@@ -96,10 +140,11 @@
                             var total = item.total;
                             var timeDo = moment(item.dateCreate).format('DD/MM/YYYY-h:mm:ss a');
                             var quizcategory = item.quizcategory;
+                            var numQuest = quizcategory.numQuest;
                             var subject = quizcategory.subject;
-                            var status = (total >= 4) ? '<p class="font-italic text-success">PASSED</p>' : '<p class="font-italic text-danger">NOT PASSED</p>';
+                            var status = (total/numQuest >= 0.4) ? '<p class="font-italic text-success">PASSED</p>' : '<p class="font-italic text-danger">NOT PASSED</p>';
                             $('#showHistory').append('<div class="card-body">\n\
-                            <a class="card-title" href="historydetail?id='+id+'"><p class="font-weight-bold text-primary">' + subject.subjectName + '/' + quizcategory.examName + '</p></a>\n\
+                            <a class="card-title" href="#"><p class="font-weight-bold text-primary">' + subject.subjectName + '/' + quizcategory.examName + '</p></a>\n\
                                 <div class="row">\n\
                                         <div class="col-md-2">\n\
                                             <p class="font-weight-bold text-success">Date Take:</p>\n\
@@ -111,7 +156,7 @@
                                             <p class="font-weight-bold text-danger">Score:</p>\n\
                                         </div>\n\
                                          <div class="col-md-1">\n\
-                                            <p class="font-italic text-light">' + total + '/10</p>\n\
+                                            <p class="font-italic text-light">' + total + '/'+numQuest+'</p>\n\
                                         </div>\n\
                                         <div class="col-md-2">\n\
                                             <p class="font-weight-bold text-primary">Status:</p>\n\

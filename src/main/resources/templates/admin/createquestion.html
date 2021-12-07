@@ -43,7 +43,7 @@
                                         <div class="row justify-content-center" th:each="option,state:*{choice}">
                                             <div class="col-md-1">
                                                 <input type="radio" th:field="*{correctAnswer}"  th:value="${state.index+1}" /> <!--checked="true"-->
-                                                <input type="hidden" th:field="*{choice[__${state.index}__].answernumber}" th:value="${state.index+1}"/>
+
                                             </div>
                                             <div class="col-md-9">
 

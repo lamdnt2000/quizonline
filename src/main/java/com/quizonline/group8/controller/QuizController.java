@@ -1,6 +1,7 @@
 package com.quizonline.group8.controller;
 
 import com.quizonline.group8.common.Constants;
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.dto.ResponseDTO;
 import com.quizonline.group8.mapper.dto.QuizDTO;
 import com.quizonline.group8.mapper.dto.QuizQuestionListDTO;
@@ -14,6 +15,7 @@ import com.quizonline.group8.service.QuizQuestionListService;
 import com.quizonline.group8.service.QuizService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
@@ -112,6 +114,13 @@ public class QuizController {
     @GetMapping("/history")
     public ResponseEntity<List<QuizResponseModel>> showHistory(){
         List<QuizDTO> quizDTOS = this.quizService.showQuizHistory();
+        List<QuizResponseModel> quizResponseModels = this.quizResponseModelMapper.toResponseModel(quizDTOS);
+        return ResponseEntity.ok(quizResponseModels);
+    }
+
+    @GetMapping(value="/search",consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity<List<QuizResponseModel>> searchHistory(MultiQuerySearchDTO multiQuerySearchDTO){
+        List<QuizDTO> quizDTOS = this.quizService.searchHistory(multiQuerySearchDTO);
         List<QuizResponseModel> quizResponseModels = this.quizResponseModelMapper.toResponseModel(quizDTOS);
         return ResponseEntity.ok(quizResponseModels);
     }

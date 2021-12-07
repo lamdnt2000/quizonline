@@ -64,9 +64,11 @@ public class QuestionController {
                 Question question = responseQuestionDTOMapper.toEntity(dto);
                 question.setStatus(1);
                 question.setDateCreate(TimeUtils.getCurrentTime());
-                List<Choise> options = responseChoiceDTOMapper.toEntity(dto.getChoice());
+
                 question = questionService.createNewQuestion(question);
-                for (Choise option : options) {
+                int count =0;
+                for (Choise option : question.getChoice()) {
+                    option.setAnswernumber(++count);
                     option.setQuestion(question);
                     choiceService.createAnswer(option);
                 }
@@ -92,8 +94,9 @@ public class QuestionController {
             if (oldQuestion!=null){
                 question.setDateUpdate(TimeUtils.getCurrentTime());
                 question.setDateCreate(oldQuestion.getDateCreate());
-                List<Choise> options = responseChoiceDTOMapper.toEntity(dto.getChoice());
-                for (Choise option : options) {
+                int count =0;
+                for (Choise option : question.getChoice()) {
+                    option.setAnswernumber(++count);
                     option.setQuestion(question);
                     choiceService.createAnswer(option);
                 }

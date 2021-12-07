@@ -1,5 +1,6 @@
 package com.quizonline.group8.controller;
 
+import com.quizonline.group8.common.Constants;
 import com.quizonline.group8.dto.LoginDTO;
 import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.dto.RegisterDTO;
@@ -13,6 +14,7 @@ import com.quizonline.group8.service.QuestionService;
 import com.quizonline.group8.service.QuizCategoryService;
 import com.quizonline.group8.service.SubjectService;
 import com.quizonline.group8.utils.CookieUtil;
+import com.quizonline.group8.utils.UserSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -49,8 +51,16 @@ public class BaseController {
     private QuizCategoryMapper quizCategoryMapper;
     @RequestMapping("/")
     public String index(Authentication authentication){
-
-        return showSubject();
+        String role = UserSecurityUtil.getRole();
+        if (Constants.ROLE_ANONYMOUS.equals(role)){
+            return "redirect:/signin";
+        }
+        else if (Constants.ROLE_STUDENT.equals(role)){
+            return "redirect:/viewsubject";
+        }
+        else{
+            return "redirect:/admin/question";
+        }
     }
 
     @GetMapping("/doquiz")
@@ -96,8 +106,10 @@ public class BaseController {
 
     @GetMapping("/history")
     public ModelAndView getHistory(Model model){
+        MultiQuerySearchDTO multiQuerySearchDTO = new MultiQuerySearchDTO();
         List<Subject> subjects = subjectService.findAll();
         model.addAttribute("subjects",subjects);
+        model.addAttribute("search",multiQuerySearchDTO);
         return new ModelAndView("history");
     }
 
@@ -121,6 +133,7 @@ public class BaseController {
         List<Subject> subjects = subjectService.findAll();
         List<ResponeChoiceDTO> choices = new ArrayList<>();
         for (int i=0;i<4;i++){
+
             choices.add(new ResponeChoiceDTO());
         }
         question.setChoice(choices);
@@ -159,6 +172,7 @@ public class BaseController {
 
     @GetMapping("/admin/question")
     public ModelAndView getQuestionPage(Model model){
+
         MultiQuerySearchDTO multiQuerySearchDTO = new MultiQuerySearchDTO();
         List<Subject> subjects = subjectService.findAll();
         model.addAttribute("subjects",subjects);

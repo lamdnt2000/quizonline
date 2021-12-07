@@ -1,5 +1,6 @@
 package com.quizonline.group8.service;
 
+import com.quizonline.group8.dto.MultiQuerySearchDTO;
 import com.quizonline.group8.mapper.dto.QuizDTO;
 import javassist.NotFoundException;
 
@@ -11,4 +12,5 @@ public interface QuizService {
     public QuizDTO findQuiz(Long examId) throws NotFoundException;
     public void updateQuiz(QuizDTO quizDTO);
     public List<QuizDTO> showQuizHistory();
+    public List<QuizDTO> searchHistory(MultiQuerySearchDTO multiQuerySearchDTO);
 }
