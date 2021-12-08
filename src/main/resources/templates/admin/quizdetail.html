@@ -41,8 +41,8 @@
                                     <input id="txtExamName" type="text" th:field="*{examName}" placeholder="Quiz Name" class="form-control form-control-sm" value="">
                                     <input id="quizId" type="hidden"th:field="*{exam_id}"/>
                                     <small class="text-dark">Subject</small>
-                                    <select class="custom-select" id="subject" th:field="*{subject}">
-                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${quiz.subject.subject_Id eq subject.subject_Id}"></option>
+                                    <select class="custom-select" id="subject" name="subject" disabled>
+                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${lastselected == subject.subject_Id}"></option>
                                     </select>
                                     <small class="text-danger">Total Question: </small>
                                     <small class="text-danger" id="totalQuestion"></small>
@@ -55,7 +55,7 @@
 
                                     <br>
 
-                                    <button id="submit" type="submit" class="btn btn-primary" >Create Exam</button>
+                                    <button id="submit" type="submit" class="btn btn-primary" >Update Exam</button>
 
                                 </form>
                                 <br>
@@ -95,59 +95,56 @@
                 });
             }
 
-            $(document).ready(function () {
-                $('#submit').click(function () {
-                    var id = $('#subject option:selected').val();
-                    var text = $('#subject option:selected').text();
-                    var subject ={"subject_Id":id,"subjectName":text};
-                    var data=$('form').serializeArray().reduce(function(data,x){data[x.name] = x.value;return data},{});
-                    data["subject"]=subject;
-                    $.ajax({
-                        type: "PUT",
-                        url: "../api/quizcategory/update",
-                        headers:{"Content-Type": "application/json"},
-                        data: JSON.stringify(data),
-                        success: function (data) {
-                            if (data.successCode!=null){
-                                window.location.href="quiz";
-                            }
-                            else{
-                                alert("Try again");
-                            }
+            $().ready(function () {
+                    $('#quizForm').validate({
+                        rules: {
+                            examName: {
+                                required: true,
+                                rangelength: [5, 50]
+                            },
+                            subject: {
+                                required: true,
+                            },
+                            examTime: {
+                                required: true,
+                                range: [1, 90]
+
+                            },
+                            numQuest: {
+                                required: true,
+                                min: 1,
+                                max: function () {
+                                    return parseInt($('#totalQuestion').html());
+                                }
+                            },
+                        },
+                        submitHandler: function (form,event) {
+                            event.preventDefault();
+                            var id = $('#subject option:selected').val();
+                            var text = $('#subject option:selected').text();
+                            var subject ={"subject_Id":id,"subjectName":text};
+                            var data=$('form').serializeArray().reduce(function(data,x){data[x.name] = x.value;return data},{});
+                            data["subject"]=subject;
+                            $.ajax({
+                                type: "PUT",
+                                url: "../api/quizcategory/update",
+                                headers:{"Content-Type": "application/json"},
+                                data: JSON.stringify(data),
+                                success: function (data) {
+                                    if (data.successCode!=null){
+                                        window.location.href="quiz";
+                                    }
+                                    else{
+                                        alert("Try again");
+                                    }
+                                }
+                            });
                         }
                     });
-                });
-            });
-        </script>
-        <script type="text/javascript">
-            $().ready(function () {
-                $('#questionForm').validate({
-                    rules: {
-                        txtExamName: {
-                            required: true,
-                            rangelength: [5, 50]
-                        },
-                        subjectId: {
-                            required: true,
 
-                        },
-                        timeDoExam: {
-                            required: true,
-                            range: [1, 90]
-
-                        },
-                        numQuest: {
-                            required: true,
-                            min: 1,
-                            max: function () {
-                                return parseInt($('#totalQuestion').html());
-                            }
-                        }
-                    }
-                });
-
-            }
+                }
             );
+
         </script>
 
     </body>

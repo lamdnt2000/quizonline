@@ -77,7 +77,7 @@ public class LoginController {
         }
         catch (BadCredentialsException e){
             reponseDTO.setErrorCode(Constants.FAIL_CODE);
-            reponseDTO.setData(e.getMessage());
+            reponseDTO.setData("User not founds");
         }
         catch (Exception e){
             reponseDTO.setErrorCode(Constants.FAIL_CODE);

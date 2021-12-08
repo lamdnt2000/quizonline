@@ -35,14 +35,14 @@
                             <div class="col-xl-10">
 
 
-                                <form method="GET" id="questionForm" th:object="${subject}">
+                                <form method="PUT" id="subjectForm" th:object="${subject}">
                                     <small class="text-dark">Question Title</small><br>
                                     <input th:field="*{subjectName}" id="txtSubjectName" type="text" placeholder="Question title" class="form-control form-control-sm" >
                                     <input id="questId" type="hidden"th:field="*{subject_Id}"/>
 
                                    <br><br>
 
-                                    <button id="submit" type="button" class="btn btn-primary">Update Subject</button>
+                                    <button id="submit" type="submit" class="btn btn-primary">Update Subject</button>
 
                                 </form>
                                 <br>
@@ -63,36 +63,33 @@
     <script th:src="@{../js/additional-methods.min.js}"></script>
         <script type="text/javascript">
 
-            $(document).ready(function () {
-                $('#submit').click(function () {
-                    $.ajax({
-                        type: "PUT",
-                        url: "../api/subject/update",
-                        data: $('form').serializeArray(),
-                        success: function (data) {
-                            if (data.successCode!=null){
-                                window.location.href="subject";
+            $().ready(function () {
+                    $('#subjectForm').validate({
+                        rules: {
+                            subjectName: {
+                                required: true,
+                                rangelength: [5, 20]
                             }
-                            else{
-                                alert(data.data);
-                            }
+                        },
+                        submitHandler: function (form,event) {
+                            event.preventDefault();
+                            $.ajax({
+                                type: "PUT",
+                                url: "../api/subject/update",
+                                data: $(form).serializeArray(),
+                                success: function (data) {
+                                    if (data.successCode!=null){
+                                        window.location.href="subject"
+                                    }
+                                    else{
+                                        alert("Error");
+                                    }
+                                }
+                            });
                         }
                     });
-                });
-            });
-        </script>
-        <script type="text/javascript">
-            $().ready(function () {
-                $('#questionForm').validate({
-                    rules: {
-                        txtSubjectName: {
-                            required: true,
-                            rangelength: [5, 20]
-                        }
-                    }
-                });
 
-            }
+                }
             );
         </script>
 

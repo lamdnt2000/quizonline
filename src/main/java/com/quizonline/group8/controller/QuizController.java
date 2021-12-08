@@ -98,7 +98,7 @@ public class QuizController {
                     totalCorrect += this.questionService.checkCorrectAnswert(questId, memResult);
                 }
             }
-            float total = (float)Math.round((float)totalCorrect/quiz.getQuizcategory().getNumQuest()*1000)/1000 * 10;
+            float total = totalCorrect;
             quiz.setTotal(total);
             quiz.setStatus(1);
             this.quizService.updateQuiz(quiz);

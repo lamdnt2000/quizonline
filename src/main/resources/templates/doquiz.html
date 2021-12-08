@@ -90,7 +90,7 @@
             var totalRow;
             var timeCountDown;
             var startPage = $('#page').val();
-            var rowPerPage = 1;
+            var rowPerPage = 5;
             var count = 1;
             var timeTakeQuiz;
 
@@ -142,7 +142,7 @@
             $('#pagination').twbsPagination({
                 startPage: parseInt(startPage),
                 totalPages: totalPage,
-                visiblePages: 5,
+                visiblePages: 2,
                 hideOnlyOnePage: true,
                 prev: '<span aria-hidden="true">&laquo;</span>',
                 next: '<span aria-hidden="true">&raquo;</span>',

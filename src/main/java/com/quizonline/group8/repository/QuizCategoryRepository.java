@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface QuizCategoryRepository extends JpaRepository<QuizCategory,Long> {
     public List<QuizCategory> findBySubject(Subject subject);
-    List<QuizCategory> findByExamNameContainingAndSubject(String examName, Subject subject_id, Pageable pageable);
+    List<QuizCategory> findByExamNameContainingAndSubjectOrderByTimeCreateDesc(String examName, Subject subject_id, Pageable pageable);
     Integer countByExamNameContainingAndSubject(String examName, Subject subject_id);
 }

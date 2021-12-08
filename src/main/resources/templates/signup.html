@@ -10,7 +10,7 @@ and open the template in the editor.
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Sign Up</title>
         <link th:href="@{home/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
-        <link th:href="@{resource/home/css/shop-homepage.css}" rel="stylesheet">
+        <link th:href="@{home/css/shop-homepage.css}" rel="stylesheet">
     </head>
     <body>
         <div th:replace="header::headerUser"/>
@@ -32,7 +32,7 @@ and open the template in the editor.
                         <input th:field="*{password}" type="password" id="txtPassword"   class="form-control my-input" placeholder="Password">
                     </div>
                     <div class="form-group">
-                        <input type="password"  id="txtConfirm"   class="form-control my-input" placeholder="Confirm Password">
+                        <input type="password" name="txtConfirm"  id="txtConfirm"   class="form-control my-input" placeholder="Confirm Password">
                     </div>
                     <div class="text-center ">
                         <button id="submit" type="submit" class="btn btn-block btn-outline-primary">Create Your Free Account</button>
@@ -57,15 +57,15 @@ and open the template in the editor.
                     $().ready((function () {
                         $('#signupForm').validate({
                             rules: {
-                                txtEmail: {
+                                email: {
                                     required: true,
                                     email: true
                                 },
-                                txtFullName: {
+                                fullname: {
                                     required: true,
                                     rangelength: [6, 50]
                                 },
-                                txtPassword: {
+                                password: {
                                     required: true,
                                     rangelength: [6, 30]
                                 },
@@ -88,7 +88,6 @@ and open the template in the editor.
                                         }
                                     }
                                 });
-
                             }
                         })
                     })

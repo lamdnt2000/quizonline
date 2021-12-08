@@ -43,7 +43,7 @@ public class QuizCategoryServiceImpl implements QuizCategoryService {
             multiQuerySearchDTO.setSubject(subject);
         }
         Pageable pageable = PageRequest.of(multiQuerySearchDTO.getPage()-1, Constants.QUIZ_CATEGORY_PER_PAGE);
-        return this.quizCategoryRepository.findByExamNameContainingAndSubject(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(),pageable);
+        return this.quizCategoryRepository.findByExamNameContainingAndSubjectOrderByTimeCreateDesc(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(),pageable);
 
     }
 
@@ -73,6 +73,7 @@ public class QuizCategoryServiceImpl implements QuizCategoryService {
         QuizCategory quizCategory = quizCategoryMapper.toEntity(quizCategoryDTO);
         QuizCategory oldQuizCategory = this.quizCategoryRepository.findById(quizCategory.getExam_id()).get();
         if (Objects.nonNull(oldQuizCategory)){
+            quizCategory.setSubject(oldQuizCategory.getSubject());
             quizCategory.setTimeCreate(oldQuizCategory.getTimeCreate());
             return this.quizCategoryRepository.save(quizCategory);
         }

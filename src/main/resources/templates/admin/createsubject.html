@@ -57,12 +57,13 @@
             $().ready(function () {
                 $('#subjectForm').validate({
                     rules: {
-                        txtSubjectName: {
+                        subjectName: {
                             required: true,
                             rangelength: [5, 20]
                         }
                     },
-                    submitHandler: function (form) {
+                    submitHandler: function (form,event) {
+                            event.preventDefault();
                             $.ajax({
                                 type: form.method,
                                 url: "../api/subject/create",

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface SubjectRepository extends JpaRepository<Subject,Long> {
     Optional<Subject> findById(Long subject_Id);
-    List<Subject> findBySubjectNameContaining(String subjectName, Pageable pageable);
+    List<Subject> findBySubjectNameContainingOrderByDateCreateDesc(String subjectName, Pageable pageable);
     Integer countBySubjectNameContaining(String subjectName);
 }

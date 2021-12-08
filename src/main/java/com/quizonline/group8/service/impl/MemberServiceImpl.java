@@ -15,4 +15,6 @@ public class MemberServiceImpl implements MemberService {
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email);
     }
+
+
 }

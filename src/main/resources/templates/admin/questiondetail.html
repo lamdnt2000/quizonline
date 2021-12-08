@@ -35,13 +35,13 @@
                             <div class="col-xl-10">
 
 
-                                <form method="GET" id="questionForm" th:object="${question}">
+                                <form method="PUT" id="questionForm" th:object="${question}">
                                     <small class="text-dark">Question Title</small><br>
                                     <input th:field="*{questionTitle}" id="txtQuestionTitle" type="text" placeholder="Question title" class="form-control form-control-sm" >
                                     <input id="questId" type="hidden"th:field="*{quest_ID}"/>
                                     <small class="text-dark">Subject</small>
                                     <select class="custom-select" th:field="*{subject}" id="subject">
-                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${lastselected eq subject.subject_Id}"></option>
+                                        <option th:each="subject: ${subjects}" th:value="${subject.subject_Id}" th:text="${subject.subjectName}" th:selected="${lastselected == subject.subject_Id}"></option>
                                     </select>
 
                                     <small class="text-dark">Answer Option</small><br>
@@ -66,7 +66,7 @@
                                     <input type="checkbox" th:field="*{isDelete}" id="status"/>
                                     <label for="status">Active</label><br><br>
 
-                                    <button id="submit" type="button" class="btn btn-primary">Update Question</button>
+                                    <button id="submit" type="submit" class="btn btn-primary">Update Question</button>
 
                                 </form>
                                 <br>
@@ -94,64 +94,43 @@
                     $('[name="_isDelete"]').val("off");
                 }
             });
-            $(document).ready(function () {
-                $('#submit').click(function () {
+            $('#questionForm').validate({
+                rules: {
+                    questionTitle:{
+                        required: true,
+                    },
+                    "choice[0].answer":"required",
+                    "choice[1].answer":"required",
+                    "choice[2].answer":"required",
+                    "choice[3].answer":"required",
+                    subject: {
+                        required: true,
+                    },
+                    correctAnswer: {
+                        required: true,
+                        number: true
+                    },
+                },
+                submitHandler: function (form,event) {
+                    event.preventDefault();
                     $.ajax({
                         type: "PUT",
                         url: "../api/question/update",
-                        data: $('form').serializeArray(),
+                        data: $(form).serializeArray(),
                         success: function (data) {
                             if (data.successCode!=null){
-                                window.location.href="question";
-                                alert("success");
+                                window.location.href="question"
                             }
                             else{
-                                alert("Try again");
+                                alert("Error");
                             }
                         }
                     });
-                });
+                }
             });
+
         </script>
-        <script type="text/javascript">
-            $().ready(function () {
-                $('#questionForm').validate({
-                    rules: {
-                        txtQuestionTitle: {
-                            required: true,
-                            rangelength: [5, 255]
-                        },
-                        subjectId: {
-                            required: true,
 
-                        },
-                        answer: {
-                            required: true,
-                            digits: true
-
-                        },
-                        txtOption1: {
-                            required: true,
-                            rangelength: [5, 255]
-                        },
-                        txtOption2: {
-                            required: true,
-                            rangelength: [5, 255]
-                        },
-                        txtOption3: {
-                            required: true,
-                            rangelength: [5, 255]
-                        },
-                        txtOption4: {
-                            required: true,
-                            rangelength: [5, 255]
-                        }
-                    }
-                });
-
-            }
-            );
-        </script>
 
     </body>
 </html>

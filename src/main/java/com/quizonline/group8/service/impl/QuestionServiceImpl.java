@@ -47,7 +47,7 @@ public class QuestionServiceImpl implements QuestionService {
             multiQuerySearchDTO.setSubject(subject);
         }
         Pageable pageable = PageRequest.of(multiQuerySearchDTO.getPage()-1, Constants.QUESTION_PER_PAGE);
-        return this.questionRepository.findByQuestionTitleContainingAndSubjectAndStatus(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(), multiQuerySearchDTO.getStatus(),pageable);
+        return this.questionRepository.findByQuestionTitleContainingAndSubjectAndStatusOrderByDateCreateDesc(multiQuerySearchDTO.getTitle(), multiQuerySearchDTO.getSubject(), multiQuerySearchDTO.getStatus(),pageable);
     }
 
     @Override

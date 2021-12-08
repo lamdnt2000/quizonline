@@ -94,15 +94,14 @@
             $().ready(function () {
                 $('#quizForm').validate({
                     rules: {
-                        txtExamName: {
+                        examName: {
                             required: true,
                             rangelength: [5, 50]
                         },
-                        subjectId: {
+                        subject: {
                             required: true,
-
                         },
-                        timeDoExam: {
+                        examTime: {
                             required: true,
                             range: [1, 90]
 
@@ -115,7 +114,8 @@
                             }
                         },
                     },
-                    submitHandler: function (form) {
+                    submitHandler: function (form,event) {
+                            event.preventDefault();
                             var id = $('#subject option:selected').val();
                             var text = $('#subject option:selected').text();
                             var subject ={"subject_Id":id,"subjectName":text};

@@ -225,6 +225,8 @@ public class BaseController {
         List<SubjectDTO> subjects = subjectService.findAllSubject();
         model.addAttribute("subjects",subjects);
         model.addAttribute("quiz",quizCategoryDTO);
+        System.out.println(quizCategoryDTO.getSubject().getSubject_Id());
+        model.addAttribute("lastselected", quizCategoryDTO.getSubject().getSubject_Id());
         return new ModelAndView("admin/quizdetail");
     }
 

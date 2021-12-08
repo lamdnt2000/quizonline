@@ -41,7 +41,7 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public List<Subject> searchSubjectByTitle(QuerySearchDTO querySearchDTO) {
         Pageable pageable = PageRequest.of(querySearchDTO.getPage()-1, Constants.SUBJECT_PER_PAGE);
-        return this.subjectRepository.findBySubjectNameContaining(querySearchDTO.getTitle(),pageable);
+        return this.subjectRepository.findBySubjectNameContainingOrderByDateCreateDesc(querySearchDTO.getTitle(),pageable);
     }
 
     @Override
