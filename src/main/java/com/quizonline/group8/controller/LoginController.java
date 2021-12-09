@@ -93,14 +93,21 @@ public class LoginController {
     public ResponseEntity<ResponseDTO> register(@Valid RegisterDTO registerDTO){
         ResponseDTO reponseDTO = new ResponseDTO();
         if(registerDTO != null){
-            memberServices.save(registerDTO);
-            reponseDTO.setSuccessCode(Constants.SUCCESS_CODE);
-            return ResponseEntity.ok().body(reponseDTO);
+            Member member = this.memberService.findByEmail(registerDTO.getEmail());
+            if (member==null) {
+                memberServices.save(registerDTO);
+                reponseDTO.setSuccessCode(Constants.SUCCESS_CODE);
+            }
+            else{
+                reponseDTO.setErrorCode(Constants.FAIL_CODE);
+                reponseDTO.setData("Email already existed");
+            }
         }
         else{
             reponseDTO.setErrorCode(Constants.FAIL_CODE);
-            return ResponseEntity.ok().body(reponseDTO);
+            reponseDTO.setData("Parameter not match dto");
         }
+        return ResponseEntity.ok().body(reponseDTO);
     }
 
     @GetMapping("/info")

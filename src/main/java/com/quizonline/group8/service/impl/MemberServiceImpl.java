@@ -13,7 +13,7 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findByEmail(String email) {
-        return memberRepository.findByEmail(email);
+        return memberRepository.findById(email).orElse(null);
     }
 
 
