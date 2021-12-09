@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -30,6 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public SecurityConfig(){
 
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 
     @Bean
@@ -67,10 +73,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterAfter(new TokenVerifier(jwtConfig.secretKey(), jwtConfig,memberServiceApp), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/signin","/signup","/admin/js/**").permitAll()
+                .antMatchers("/signin","/signup","/admin/js/**","/logout").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ROLE_Teacher")
                 .antMatchers("/doquiz","/history","/quizcategory","/viewsubject","/historydetail").hasAuthority("ROLE_Student")
-                .anyRequest().permitAll();
+                .anyRequest().permitAll()
+                .and().exceptionHandling().accessDeniedHandler(accessDeniedHandler());
     }
 
 

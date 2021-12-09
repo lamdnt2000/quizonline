@@ -3,9 +3,12 @@ package com.quizonline.group8.controller;
 import com.quizonline.group8.common.Constants;
 import com.quizonline.group8.dto.LoginDTO;
 import com.quizonline.group8.dto.MultiQuerySearchDTO;
-import com.quizonline.group8.dto.RegisterDTO;
 import com.quizonline.group8.dto.QuerySearchDTO;
-import com.quizonline.group8.mapper.dto.*;
+import com.quizonline.group8.dto.RegisterDTO;
+import com.quizonline.group8.mapper.dto.QuizCategoryDTO;
+import com.quizonline.group8.mapper.dto.ResponeChoiceDTO;
+import com.quizonline.group8.mapper.dto.ResponseQuestionDTO;
+import com.quizonline.group8.mapper.dto.SubjectDTO;
 import com.quizonline.group8.mapper.impl.*;
 import com.quizonline.group8.model.Question;
 import com.quizonline.group8.model.QuizCategory;
@@ -16,7 +19,6 @@ import com.quizonline.group8.service.SubjectService;
 import com.quizonline.group8.utils.CookieUtil;
 import com.quizonline.group8.utils.UserSecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,7 +52,7 @@ public class BaseController {
     @Autowired
     private QuizCategoryMapper quizCategoryMapper;
     @RequestMapping("/")
-    public String index(Authentication authentication){
+    public String index(){
         String role = UserSecurityUtil.getRole();
         if (Constants.ROLE_ANONYMOUS.equals(role)){
             return "redirect:/signin";
@@ -84,24 +86,37 @@ public class BaseController {
     }
 
     @GetMapping("/signin")
-    public ModelAndView getSignin(){
-        LoginDTO loginDTO = new LoginDTO();
-        return new ModelAndView("signin", "login",loginDTO);
+    public String getSignin(Model model){
+        String role = UserSecurityUtil.getRole();
+        if (Constants.ROLE_ANONYMOUS.equals(role)) {
+            LoginDTO loginDTO = new LoginDTO();
+            model.addAttribute("login",loginDTO);
+            return "signin";
+        }
+        else{
+            return index();
+        }
     }
 
     @GetMapping("/signup")
-    public ModelAndView getSignup(){
-        RegisterDTO registerDTO = new RegisterDTO();
-        return new ModelAndView("signup", "member",registerDTO);
+    public String getSignup(Model model){
+        String role = UserSecurityUtil.getRole();
+        if (Constants.ROLE_ANONYMOUS.equals(role)) {
+            RegisterDTO registerDTO = new RegisterDTO();
+            model.addAttribute("member",registerDTO);
+            return "signup";
+        }
+        else{
+            return index();
+        }
     }
 
 
     @GetMapping("/signout")
-    public ModelAndView getSignout(HttpServletResponse response, HttpSession session){
+    public String getSignout(HttpServletResponse response, HttpSession session){
         session.invalidate();
         CookieUtil.clear(response,"token");
-        LoginDTO loginDTO = new LoginDTO();
-        return new ModelAndView("redirect:/signin","login",loginDTO);
+        return "redirect:/";
     }
 
     @GetMapping("/history")
@@ -113,6 +128,10 @@ public class BaseController {
         return new ModelAndView("history");
     }
 
+    @GetMapping("/access-denied")
+    public String getAccessDeniedPage(){
+        return "403";
+    }
     @GetMapping("/admin/header")
     public String getHeaderAdmin(){
         return "admin/header";
